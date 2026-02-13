@@ -1,0 +1,14 @@
+{
+  "domains": [
+    "www.unibicfoods.com",
+    "www.patanjaliayurved.net",
+    "www.patanjaliayurved.org",
+    "www.britannia.co.in",
+    "www.itcstore.in",
+    "www.nestle.in"
+  ],
+  "barcode_sources": {},
+  "rate_limit_ms": 1200,
+  "timeout_ms": 6000,
+  "user_agent": "HealthLensIngestor/1.0"
+}

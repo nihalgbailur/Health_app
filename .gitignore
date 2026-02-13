@@ -1,0 +1,5 @@
+# Ignore local OS files
+.DS_Store
+
+# Do not commit source review PDF
+Health Risks in Indian Products, Global Bans, and Evidence-Based Nutrition_ A Comprehensive Guide.pdf

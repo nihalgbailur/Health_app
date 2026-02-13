@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#12382f" />
+    <title>HealthLens</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb bg-orb-a" aria-hidden="true"></div>
+    <div class="bg-orb bg-orb-b" aria-hidden="true"></div>
+    <div class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Evidence-based product safety</p>
+          <h1>HealthLens</h1>
+        </div>
+        <button id="installBtn" class="ghost-btn" hidden>Install</button>
+      </header>
+
+      <main class="main-content" id="mainContent">
+        <section class="tab-panel active" data-tab="home" aria-label="Home">
+          <article class="card hero-card reveal">
+            <p class="hero-kicker">Scan in under 10 seconds</p>
+            <h2>Find product risk fast</h2>
+            <p>
+              Scan barcode or paste ingredients. We flag high-risk markers, show evidence, and suggest safer swaps.
+            </p>
+            <form id="homeScanForm" class="scan-row">
+              <input
+                id="homeBarcode"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="Try 8901000000035"
+                aria-label="Barcode"
+              />
+              <button type="submit" class="primary-btn">Scan now</button>
+            </form>
+          </article>
+
+          <article class="card reveal">
+            <div class="section-head">
+              <h3>Recent checks</h3>
+              <button id="clearRecentBtn" class="link-btn" type="button">Clear</button>
+            </div>
+            <ul id="recentList" class="stack-list"></ul>
+          </article>
+
+          <article class="card reveal">
+            <div class="section-head">
+              <h3>Ingestion queue</h3>
+              <span id="queueCount" class="meta">0 queued</span>
+            </div>
+            <p class="muted">Unknown or sparse scans are queued for daily API/scrape enrichment.</p>
+            <div class="badge-row">
+              <button id="exportQueueBtn" type="button" class="secondary-btn">Export queue JSON</button>
+              <button id="clearQueueBtn" type="button" class="ghost-btn">Clear queue</button>
+            </div>
+          </article>
+
+          <article class="card reveal">
+            <h3>Top alerts</h3>
+            <ul id="homeAlerts" class="stack-list"></ul>
+          </article>
+        </section>
+
+        <section class="tab-panel" data-tab="scan" aria-label="Scan and Check">
+          <article class="card reveal">
+            <h2>Scan & Check</h2>
+            <p class="muted">Barcode lookup + manual ingredient check for unknown products.</p>
+
+            <form id="scanBarcodeForm" class="field-group">
+              <label for="scanBarcode">Barcode</label>
+              <div class="scan-row">
+                <input
+                  id="scanBarcode"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  placeholder="Enter barcode"
+                />
+                <button type="submit" class="primary-btn">Check</button>
+              </div>
+            </form>
+
+            <form id="manualCheckForm" class="field-group">
+              <label for="manualIngredients">Manual ingredient check</label>
+              <textarea
+                id="manualIngredients"
+                rows="4"
+                placeholder="Example: milk solids, sugar, tartrazine, flavor"
+              ></textarea>
+              <button type="submit" class="secondary-btn">Analyze ingredients</button>
+            </form>
+          </article>
+
+          <article id="scanResult" class="card reveal empty-state">
+            <h3>No scan yet</h3>
+            <p>Run a barcode or ingredient check to see risk summary, nutrition traffic light, and evidence cards.</p>
+          </article>
+        </section>
+
+        <section class="tab-panel" data-tab="watchdog" aria-label="Watchdog">
+          <article class="card reveal">
+            <h2>Watchdog Lite</h2>
+            <p class="muted">Bans, recalls, refusals, and regulator updates by region.</p>
+            <ul id="watchdogList" class="stack-list"></ul>
+          </article>
+        </section>
+
+        <section class="tab-panel" data-tab="coach" aria-label="Coach">
+          <article class="card reveal">
+            <h2>Coach Lite</h2>
+            <p class="muted">One actionable nudge a day. No diagnosis, no fear language.</p>
+            <div id="coachTip" class="coach-card"></div>
+            <button id="nextTipBtn" type="button" class="secondary-btn">Next tip</button>
+          </article>
+        </section>
+
+        <section class="tab-panel" data-tab="saved" aria-label="Saved">
+          <article class="card reveal">
+            <div class="section-head">
+              <h2>Saved products</h2>
+              <button id="clearSavedBtn" class="link-btn" type="button">Clear</button>
+            </div>
+            <ul id="savedList" class="stack-list"></ul>
+          </article>
+
+          <article class="card reveal">
+            <h3>Compare 2 products</h3>
+            <div class="compare-controls">
+              <label for="compareLeft">Product A</label>
+              <select id="compareLeft"></select>
+              <label for="compareRight">Product B</label>
+              <select id="compareRight"></select>
+            </div>
+            <button id="runCompareBtn" type="button" class="primary-btn">Compare</button>
+            <div id="compareResult" class="compare-result"></div>
+          </article>
+        </section>
+      </main>
+
+      <nav class="tab-bar" aria-label="Primary tabs">
+        <button class="tab-btn active" data-go-tab="home" aria-current="page">Home</button>
+        <button class="tab-btn" data-go-tab="scan">Scan</button>
+        <button class="tab-btn" data-go-tab="watchdog">Watchdog</button>
+        <button class="tab-btn" data-go-tab="coach">Coach</button>
+        <button class="tab-btn" data-go-tab="saved">Saved</button>
+      </nav>
+
+      <footer class="legal-note">
+        <p>
+          Informational only, not medical advice. Signals reflect available evidence and may include
+          <strong>Under Review</strong> claims where regulator confirmation is pending.
+        </p>
+      </footer>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

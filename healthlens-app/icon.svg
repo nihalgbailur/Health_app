@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="HealthLens icon">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#11362d"/>
+      <stop offset="100%" stop-color="#2d705f"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#g)"/>
+  <circle cx="256" cy="252" r="124" fill="#f8f4ec"/>
+  <path d="M180 252h52v-50h48v50h52v46h-52v52h-48v-52h-52z" fill="#1c5a4b"/>
+  <path d="M112 390c44-24 95-36 144-36s100 12 144 36" fill="none" stroke="#f8f4ec" stroke-width="22" stroke-linecap="round"/>
+</svg>
