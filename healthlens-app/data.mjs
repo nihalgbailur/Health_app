@@ -80,6 +80,7 @@
  * @property {string} regex
  * @property {string} action_text
  * @property {'Regulator Confirmed' | 'Independent Evidence' | 'Under Review'} verification_state
+ * @property {'High' | 'Moderate' | 'Low'} severity
  * @property {'high' | 'medium' | 'low'} confidence
  * @property {string[]} jurisdictions
  * @property {string[]} evidence_rule_ids
@@ -581,6 +582,7 @@ export const AVOID_MARKERS = [
     regex: '(partially\\s+hydrogenated|hydrogenated\\s+vegetable\\s+oil|\\bpho\\b|trans\\s*fat|shortening)',
     action_text: 'If listed on pack, skip routine consumption and pick a PHO-free alternative.',
     verification_state: 'Regulator Confirmed',
+    severity: 'High',
     confidence: 'high',
     jurisdictions: ['Global', 'US', 'EU', 'India'],
     evidence_rule_ids: ['trans_fat_pho'],
@@ -597,6 +599,7 @@ export const AVOID_MARKERS = [
     regex: '(potassium\\s+bromate|bromated\\s+flour|\\be924[a-b]?\\b)',
     action_text: 'If listed on pack, avoid and choose products without bromate improvers.',
     verification_state: 'Regulator Confirmed',
+    severity: 'High',
     confidence: 'high',
     jurisdictions: ['India', 'US', 'EU', 'Global'],
     evidence_rule_ids: ['potassium_bromate'],
@@ -613,6 +616,7 @@ export const AVOID_MARKERS = [
     regex: '(metanil\\s+yellow|erythrosine|red\\s*dye\\s*3|\\be127\\b|tartrazine|\\be102\\b)',
     action_text: 'If listed on pack, avoid frequent use and prefer no-added-color alternatives.',
     verification_state: 'Under Review',
+    severity: 'High',
     confidence: 'low',
     jurisdictions: ['India', 'US', 'EU', 'Global'],
     evidence_rule_ids: ['metanil_yellow'],
@@ -629,6 +633,7 @@ export const AVOID_MARKERS = [
     regex: '(high\\s+erucic|unprocessed\\s+mustard\\s+oil|kachi\\s+ghani\\s+mustard)',
     action_text: 'Treat as caution unless authority confirmation is available; compare refined alternatives.',
     verification_state: 'Under Review',
+    severity: 'Moderate',
     confidence: 'low',
     jurisdictions: ['Global'],
     evidence_rule_ids: [],
@@ -645,6 +650,7 @@ export const AVOID_MARKERS = [
     regex: '(ethylene\\s+oxide|salmonella|contaminated\\s+spice)',
     action_text: 'Use regulator recall/import-refusal links to verify the exact batch before use.',
     verification_state: 'Under Review',
+    severity: 'Moderate',
     confidence: 'medium',
     jurisdictions: ['US', 'EU', 'Global'],
     evidence_rule_ids: [],
@@ -661,6 +667,7 @@ export const AVOID_MARKERS = [
     regex: '(lead\\s*chromate|lead\\s*contaminat|adulterated\\s+turmeric)',
     action_text: 'If this contamination marker appears, avoid and verify lot-level regulator notices.',
     verification_state: 'Regulator Confirmed',
+    severity: 'High',
     confidence: 'high',
     jurisdictions: ['US', 'India', 'Global'],
     evidence_rule_ids: ['lead_chromate'],

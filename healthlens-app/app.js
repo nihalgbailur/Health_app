@@ -1029,19 +1029,18 @@ function renderAvoidBanner(result) {
 
   const markerList = matches
     .slice(0, 6)
-    .map((match) => `<li>${escapeHTML(match.display_name)} (${escapeHTML(match.matched_text)})</li>`)
+    .map((match) => `<li>${escapeHTML(match.display_name)}</li>`)
     .join('');
 
   return `<div class="stack-item avoid-banner ${verdictClass}">
     <div class="badge-row">
       <span class="badge ${verdictClass}">${escapeHTML(verdict)}</span>
-      <span class="meta">Warn + explain mode</span>
+      <span class="meta">Name-only quick list</span>
     </div>
-    <p>${escapeHTML(verdict === 'Avoid' ? 'Confirmed avoid marker detected. Prefer a different product.' : 'Caution marker detected. Verify before regular use.')}</p>
     <ul class="meta-list">${markerList}</ul>
     ${
       notes.length
-        ? `<ul class="meta-list">${notes.map((note) => `<li>${escapeHTML(note)}</li>`).join('')}</ul>`
+        ? `<p class="meta">${escapeHTML(notes[0])}</p>`
         : ''
     }
   </div>`;
@@ -1061,7 +1060,7 @@ function toCategoryLabel(category) {
 
 function renderAvoidMarkerCard(marker) {
   const sourceColor = SOURCE_BADGE_COLORS[marker.verification_state] || '#334';
-  const confidenceClass = marker.confidence === 'high' ? 'low' : marker.confidence === 'medium' ? 'moderate' : 'unknown';
+  const severityClass = marker.severity === 'High' ? 'high' : marker.severity === 'Moderate' ? 'moderate' : 'low';
   const links = marker.source_urls.length
     ? marker.source_urls
         .map((url) => `<a href="${escapeAttr(url)}" target="_blank" rel="noreferrer">Source</a>`)
@@ -1071,14 +1070,10 @@ function renderAvoidMarkerCard(marker) {
   return `<li class="stack-item avoid-marker">
     <div class="badge-row">
       <span class="badge source" style="background:${sourceColor}">${escapeHTML(marker.verification_state)}</span>
-      <span class="badge ${confidenceClass}">${escapeHTML(marker.confidence.toUpperCase())}</span>
+      <span class="badge ${severityClass}">${escapeHTML(marker.severity)}</span>
       <span class="meta">${escapeHTML(toCategoryLabel(marker.category))}</span>
     </div>
     <p><strong>${escapeHTML(marker.display_name)}</strong></p>
-    <p class="meta">Aliases: ${escapeHTML(marker.aliases.join(', ') || 'Not specified')}</p>
-    <p>${escapeHTML(marker.action_text)}</p>
-    <p class="meta">Jurisdictions: ${escapeHTML(marker.jurisdictions.join(', ') || 'Global')}</p>
-    <p class="meta">Verified: ${escapeHTML(marker.last_verified_at)}${marker.is_provisional ? ' • Provisional' : ''}</p>
     <p class="meta">${links}</p>
   </li>`;
 }
@@ -1104,7 +1099,13 @@ function renderAvoidTab() {
 
   const filtered = (state.avoidMarkers || [])
     .filter((marker) => (selectedCategory === 'all' ? true : String(marker.category || '').toLowerCase() === selectedCategory))
-    .filter((marker) => markerMatchesQuery(marker, searchTerm));
+    .filter((marker) => markerMatchesQuery(marker, searchTerm))
+    .sort((left, right) => {
+      const severityRank = { High: 3, Moderate: 2, Low: 1 };
+      const delta = (severityRank[right.severity] || 1) - (severityRank[left.severity] || 1);
+      if (delta !== 0) return delta;
+      return String(left.display_name || '').localeCompare(String(right.display_name || ''));
+    });
 
   const confirmed = filtered.filter((marker) => marker.verification_state === 'Regulator Confirmed');
   const review = filtered.filter((marker) => marker.verification_state !== 'Regulator Confirmed');

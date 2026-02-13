@@ -116,6 +116,7 @@ export async function loadRegulatoryActions({
 function normalizeAvoidMarker(item) {
   const verificationState = String(item?.verification_state || '').trim();
   const confidence = String(item?.confidence || '').toLowerCase();
+  const severity = String(item?.severity || '').toLowerCase();
   return {
     id: String(item?.id || '').trim(),
     display_name: String(item?.display_name || '').trim(),
@@ -132,6 +133,14 @@ function normalizeAvoidMarker(item) {
       verificationState === 'Regulator Confirmed' || verificationState === 'Independent Evidence' || verificationState === 'Under Review'
         ? verificationState
         : 'Under Review',
+    severity:
+      severity === 'high'
+        ? 'High'
+        : severity === 'moderate'
+          ? 'Moderate'
+          : severity === 'low'
+            ? 'Low'
+            : 'Moderate',
     confidence: confidence === 'high' || confidence === 'medium' || confidence === 'low' ? confidence : 'low',
     jurisdictions: Array.isArray(item?.jurisdictions)
       ? item.jurisdictions.map((value) => String(value || '').trim()).filter(Boolean)

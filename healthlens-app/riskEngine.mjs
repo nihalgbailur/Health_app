@@ -31,6 +31,7 @@ import {
  * @property {'Regulator Confirmed' | 'Independent Evidence' | 'Under Review'} verification_state
  * @property {string} action_text
  * @property {string} display_name
+ * @property {'High' | 'Moderate' | 'Low'} severity
  * @property {'high' | 'medium' | 'low'} confidence
  * @property {'additive' | 'contaminant' | 'oil' | 'processing' | 'microbial' | 'other'} category
  * @property {string[]} source_urls
@@ -299,6 +300,7 @@ function buildAvoidMatch(source, text, marker) {
     verification_state: marker.verification_state,
     action_text: marker.action_text,
     display_name: marker.display_name,
+    severity: marker.severity || 'Moderate',
     confidence: marker.confidence,
     category: marker.category,
     source_urls: Array.isArray(marker.source_urls) ? marker.source_urls : []
@@ -574,8 +576,8 @@ export function evaluateAvoidMarkers(product, ingredients, manualInput, regulato
     };
   }
 
-  const confirmedHigh = deduped.some(
-    (entry) => entry.verification_state === 'Regulator Confirmed' && entry.confidence === 'high'
+  const confirmedCritical = deduped.some(
+    (entry) => entry.verification_state === 'Regulator Confirmed' && entry.severity !== 'Low'
   );
   const underReviewCount = deduped.filter((entry) => entry.verification_state === 'Under Review').length;
   const provisionalCount = deduped.filter((entry) => entry.verification_state !== 'Regulator Confirmed').length;
@@ -591,7 +593,7 @@ export function evaluateAvoidMarkers(product, ingredients, manualInput, regulato
   }
 
   return {
-    avoid_verdict: confirmedHigh ? 'Avoid' : 'Caution',
+    avoid_verdict: confirmedCritical ? 'Avoid' : 'Caution',
     avoid_matches: deduped,
     avoid_notes: notes
   };

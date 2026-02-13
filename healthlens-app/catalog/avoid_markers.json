@@ -1,19 +1,130 @@
 [
   {
-    "id": "avoid-trans-fat-pho",
+    "id": "avoid-banned-aquaculture-antibiotic-residues",
+    "display_name": "Banned aquaculture antibiotic residues",
+    "aliases": [
+      "chloramphenicol",
+      "nitrofuran",
+      "malachite green"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "(chloramphenicol|nitrofuran|malachite\\s*green)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Regulator Confirmed",
+    "severity": "High",
+    "confidence": "high",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [
+      "antibiotic_shrimp"
+    ],
+    "source_urls": [
+      "https://www.accessdata.fda.gov/cms_ia/importalert_16.html"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": false
+  },
+  {
+    "id": "avoid-deg-eg-contamination-marker",
+    "display_name": "DEG/EG contamination marker",
+    "aliases": [
+      "diethylene glycol",
+      "ethylene glycol"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "(diethylene\\s*glycol|ethylene\\s*glycol)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Regulator Confirmed",
+    "severity": "High",
+    "confidence": "high",
+    "jurisdictions": [
+      "Global"
+    ],
+    "evidence_rule_ids": [
+      "deo_eg_contamination"
+    ],
+    "source_urls": [
+      "https://www.who.int/news-room/medical-product-alerts"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": false
+  },
+  {
+    "id": "avoid-erythrosine-ins-127-red-dye-3-e127",
+    "display_name": "Erythrosine (INS 127, Red Dye 3, E127)",
+    "aliases": [
+      "Erythrosine (INS 127, Red Dye 3, E127)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Erythrosine \\(INS 127, Red Dye 3, E127\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Regulator Confirmed",
+    "severity": "High",
+    "confidence": "medium",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": false
+  },
+  {
+    "id": "avoid-lead-adulteration-marker",
+    "display_name": "Lead adulteration marker",
+    "aliases": [
+      "lead chromate",
+      "lead contaminated",
+      "adulterated turmeric"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "(lead\\s*chromate|lead\\s*contaminat|adulterated\\s+turmeric)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Regulator Confirmed",
+    "severity": "High",
+    "confidence": "high",
+    "jurisdictions": [
+      "US",
+      "India",
+      "Global"
+    ],
+    "evidence_rule_ids": [
+      "lead_chromate"
+    ],
+    "source_urls": [
+      "https://www.fda.gov/food/importing-food-products-united-states/import-alerts"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": false
+  },
+  {
+    "id": "avoid-partially-hydrogenated-oils-pho-trans-fat-markers",
     "display_name": "Partially hydrogenated oils (PHO) / trans-fat markers",
     "aliases": [
       "partially hydrogenated",
       "hydrogenated vegetable oil",
-      "pho",
       "trans fat",
+      "pho",
       "shortening"
     ],
     "category": "processing",
     "pack_match_mode": "ingredient",
     "regex": "(partially\\s+hydrogenated|hydrogenated\\s+vegetable\\s+oil|\\bpho\\b|trans\\s*fat|shortening)",
-    "action_text": "If listed on pack, skip routine consumption and pick a PHO-free alternative.",
+    "action_text": "If listed on pack, skip and choose PHO-free alternatives.",
     "verification_state": "Regulator Confirmed",
+    "severity": "High",
     "confidence": "high",
     "jurisdictions": [
       "Global",
@@ -31,7 +142,7 @@
     "is_provisional": false
   },
   {
-    "id": "avoid-potassium-bromate",
+    "id": "avoid-potassium-bromate-bromated-flour-improvers",
     "display_name": "Potassium bromate / bromated flour improvers",
     "aliases": [
       "potassium bromate",
@@ -43,8 +154,9 @@
     "category": "additive",
     "pack_match_mode": "ingredient",
     "regex": "(potassium\\s+bromate|bromated\\s+flour|\\be924[a-b]?\\b)",
-    "action_text": "If listed on pack, avoid and choose products without bromate improvers.",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
     "verification_state": "Regulator Confirmed",
+    "severity": "High",
     "confidence": "high",
     "jurisdictions": [
       "India",
@@ -62,53 +174,23 @@
     "is_provisional": false
   },
   {
-    "id": "avoid-banned-dyes",
-    "display_name": "Textile/synthetic dye markers (for example metanil yellow, erythrosine)",
+    "id": "avoid-acesulfame-k-e950",
+    "display_name": "Acesulfame-K (E950)",
     "aliases": [
-      "metanil yellow",
-      "erythrosine",
-      "red dye 3",
-      "e127",
-      "tartrazine",
-      "e102"
+      "Acesulfame-K (E950)"
     ],
     "category": "additive",
     "pack_match_mode": "ingredient",
-    "regex": "(metanil\\s+yellow|erythrosine|red\\s*dye\\s*3|\\be127\\b|tartrazine|\\be102\\b)",
-    "action_text": "If listed on pack, avoid frequent use and prefer no-added-color alternatives.",
+    "regex": "Acesulfame-K \\(E950\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
     "verification_state": "Under Review",
+    "severity": "High",
     "confidence": "low",
     "jurisdictions": [
+      "Global",
       "India",
       "US",
-      "EU",
-      "Global"
-    ],
-    "evidence_rule_ids": [
-      "metanil_yellow"
-    ],
-    "source_urls": [
-      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
-    ],
-    "last_verified_at": "2026-02-13",
-    "is_provisional": true
-  },
-  {
-    "id": "avoid-mustard-erucic-claim",
-    "display_name": "High-erucic mustard oil claim marker",
-    "aliases": [
-      "high erucic acid",
-      "unprocessed mustard oil",
-      "kachi ghani mustard"
-    ],
-    "category": "oil",
-    "pack_match_mode": "claim",
-    "regex": "(high\\s+erucic|unprocessed\\s+mustard\\s+oil|kachi\\s+ghani\\s+mustard)",
-    "action_text": "Treat as caution unless authority confirmation is available; compare refined alternatives.",
-    "verification_state": "Under Review",
-    "confidence": "low",
-    "jurisdictions": [
-      "Global"
+      "EU"
     ],
     "evidence_rule_ids": [],
     "source_urls": [
@@ -118,18 +200,927 @@
     "is_provisional": true
   },
   {
-    "id": "avoid-spice-contamination-claims",
-    "display_name": "Spice contamination claim marker (ethylene oxide/salmonella)",
+    "id": "avoid-aflatoxins",
+    "display_name": "Aflatoxins",
     "aliases": [
-      "ethylene oxide",
-      "salmonella",
-      "contaminated spice batch"
+      "Aflatoxins"
+    ],
+    "category": "microbial",
+    "pack_match_mode": "ingredient",
+    "regex": "Aflatoxins",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-allura-red-e129",
+    "display_name": "Allura Red (E129)",
+    "aliases": [
+      "Allura Red (E129)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Allura Red \\(E129\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-antibiotic-residues-in-food",
+    "display_name": "Antibiotic residues in food",
+    "aliases": [
+      "Antibiotic residues in food"
     ],
     "category": "contaminant",
-    "pack_match_mode": "both",
-    "regex": "(ethylene\\s+oxide|salmonella|contaminated\\s+spice)",
-    "action_text": "Use regulator recall/import-refusal links to verify the exact batch before use.",
+    "pack_match_mode": "ingredient",
+    "regex": "Antibiotic residues in food",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
     "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-arsenic",
+    "display_name": "Arsenic",
+    "aliases": [
+      "Arsenic"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "ingredient",
+    "regex": "Arsenic",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-aspartame-e951",
+    "display_name": "Aspartame (E951)",
+    "aliases": [
+      "Aspartame (E951)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Aspartame \\(E951\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-bisphenol-a-bpa",
+    "display_name": "Bisphenol A (BPA)",
+    "aliases": [
+      "Bisphenol A (BPA)"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "ingredient",
+    "regex": "Bisphenol A \\(BPA\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-boric-acid-in-milk",
+    "display_name": "Boric acid in milk",
+    "aliases": [
+      "Boric acid in milk"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "ingredient",
+    "regex": "Boric acid in milk",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-brilliant-blue-e133",
+    "display_name": "Brilliant Blue (E133)",
+    "aliases": [
+      "Brilliant Blue (E133)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Brilliant Blue \\(E133\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-butylated-hydroxyanisole-bha-e320",
+    "display_name": "Butylated hydroxyanisole (BHA, E320)",
+    "aliases": [
+      "Butylated hydroxyanisole (BHA, E320)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Butylated hydroxyanisole \\(BHA, E320\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-butylated-hydroxytoluene-bht-e321",
+    "display_name": "Butylated hydroxytoluene (BHT, E321)",
+    "aliases": [
+      "Butylated hydroxytoluene (BHT, E321)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Butylated hydroxytoluene \\(BHT, E321\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-cadmium",
+    "display_name": "Cadmium",
+    "aliases": [
+      "Cadmium"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "ingredient",
+    "regex": "Cadmium",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-carmoisine-e122",
+    "display_name": "Carmoisine (E122)",
+    "aliases": [
+      "Carmoisine (E122)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Carmoisine \\(E122\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-coliform-bacteria-high-cfu-ml",
+    "display_name": "Coliform bacteria (high CFU/ml)",
+    "aliases": [
+      "Coliform bacteria (high CFU/ml)"
+    ],
+    "category": "microbial",
+    "pack_match_mode": "ingredient",
+    "regex": "Coliform bacteria \\(high CFU/ml\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-cyclamates-e952",
+    "display_name": "Cyclamates (E952)",
+    "aliases": [
+      "Cyclamates (E952)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Cyclamates \\(E952\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-detergent-caustic-soda-in-milk",
+    "display_name": "Detergent/caustic soda in milk",
+    "aliases": [
+      "Detergent/caustic soda in milk"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "ingredient",
+    "regex": "Detergent/caustic soda in milk",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-e-coli-in-dairy",
+    "display_name": "E. coli in dairy",
+    "aliases": [
+      "E. coli in dairy"
+    ],
+    "category": "microbial",
+    "pack_match_mode": "ingredient",
+    "regex": "E\\. coli in dairy",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-formaldehyde-in-milk",
+    "display_name": "Formaldehyde in milk",
+    "aliases": [
+      "Formaldehyde in milk"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "ingredient",
+    "regex": "Formaldehyde in milk",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-formalin",
+    "display_name": "Formalin",
+    "aliases": [
+      "Formalin"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "ingredient",
+    "regex": "Formalin",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-high-fructose-corn-syrup-hfcs",
+    "display_name": "High fructose corn syrup (HFCS)",
+    "aliases": [
+      "High fructose corn syrup (HFCS)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "High fructose corn syrup \\(HFCS\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-hormonal-growth-stimulants",
+    "display_name": "Hormonal growth stimulants",
+    "aliases": [
+      "Hormonal growth stimulants"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Hormonal growth stimulants",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-hydrogen-peroxide-in-milk",
+    "display_name": "Hydrogen peroxide in milk",
+    "aliases": [
+      "Hydrogen peroxide in milk"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Hydrogen peroxide in milk",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-hydrogenated-fats",
+    "display_name": "Hydrogenated fats",
+    "aliases": [
+      "Hydrogenated fats"
+    ],
+    "category": "oil",
+    "pack_match_mode": "ingredient",
+    "regex": "Hydrogenated fats",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-indigo-carmine-e132",
+    "display_name": "Indigo Carmine (E132)",
+    "aliases": [
+      "Indigo Carmine (E132)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Indigo Carmine \\(E132\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-interesterified-fats",
+    "display_name": "Interesterified fats",
+    "aliases": [
+      "Interesterified fats"
+    ],
+    "category": "oil",
+    "pack_match_mode": "ingredient",
+    "regex": "Interesterified fats",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-lead",
+    "display_name": "Lead",
+    "aliases": [
+      "Lead"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "ingredient",
+    "regex": "Lead",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-mercury",
+    "display_name": "Mercury",
+    "aliases": [
+      "Mercury"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "ingredient",
+    "regex": "Mercury",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-metanil-yellow",
+    "display_name": "Metanil Yellow",
+    "aliases": [
+      "Metanil Yellow"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Metanil Yellow",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-microbial-toxins-salmonella-e-coli",
+    "display_name": "Microbial toxins (salmonella, E. coli)",
+    "aliases": [
+      "Microbial toxins (salmonella, E. coli)"
+    ],
+    "category": "microbial",
+    "pack_match_mode": "ingredient",
+    "regex": "Microbial toxins \\(salmonella, E\\. coli\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-monosodium-glutamate-msg-e621",
+    "display_name": "Monosodium glutamate (MSG, E621)",
+    "aliases": [
+      "Monosodium glutamate (MSG, E621)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Monosodium glutamate \\(MSG, E621\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-mycotoxins-ochratoxin-a",
+    "display_name": "Mycotoxins (ochratoxin A)",
+    "aliases": [
+      "Mycotoxins (ochratoxin A)"
+    ],
+    "category": "microbial",
+    "pack_match_mode": "ingredient",
+    "regex": "Mycotoxins \\(ochratoxin A\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-neotame-e961",
+    "display_name": "Neotame (E961)",
+    "aliases": [
+      "Neotame (E961)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Neotame \\(E961\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-pesticide-residues-tricyclazole-chlorpyrifos",
+    "display_name": "Pesticide residues (tricyclazole, chlorpyrifos)",
+    "aliases": [
+      "Pesticide residues (tricyclazole, chlorpyrifos)"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "ingredient",
+    "regex": "Pesticide residues \\(tricyclazole, chlorpyrifos\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-pfas",
+    "display_name": "PFAS",
+    "aliases": [
+      "PFAS"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "ingredient",
+    "regex": "PFAS",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-phthalates",
+    "display_name": "Phthalates",
+    "aliases": [
+      "Phthalates"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "ingredient",
+    "regex": "Phthalates",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-ponceau-4r-e124",
+    "display_name": "Ponceau 4R (E124)",
+    "aliases": [
+      "Ponceau 4R (E124)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Ponceau 4R \\(E124\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-protein-supplements-heavy-metal-adulterant-concern",
+    "display_name": "Protein supplements (heavy metal/adulterant concern)",
+    "aliases": [
+      "Protein supplements (heavy metal/adulterant concern)"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Protein supplements \\(heavy metal/adulterant concern\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
     "confidence": "medium",
     "jurisdictions": [
       "US",
@@ -138,38 +1129,2570 @@
     ],
     "evidence_rule_ids": [],
     "source_urls": [
-      "https://www.food.gov.uk/news-alerts",
-      "https://www.accessdata.fda.gov/cms_ia/importalert_16.html"
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
     ],
     "last_verified_at": "2026-02-13",
     "is_provisional": true
   },
   {
-    "id": "avoid-lead-adulteration",
-    "display_name": "Lead adulteration marker",
+    "id": "avoid-quinoline-yellow-e104",
+    "display_name": "Quinoline Yellow (E104)",
     "aliases": [
-      "lead chromate",
-      "lead contaminated",
-      "adulterated turmeric"
+      "Quinoline Yellow (E104)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Quinoline Yellow \\(E104\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-raw-milk",
+    "display_name": "Raw milk",
+    "aliases": [
+      "Raw milk"
+    ],
+    "category": "microbial",
+    "pack_match_mode": "both",
+    "regex": "Raw milk",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "medium",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-refined-palmolein-oil",
+    "display_name": "Refined palmolein oil",
+    "aliases": [
+      "Refined palmolein oil"
+    ],
+    "category": "oil",
+    "pack_match_mode": "ingredient",
+    "regex": "Refined palmolein oil",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-rhodamine-b",
+    "display_name": "Rhodamine B",
+    "aliases": [
+      "Rhodamine B"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Rhodamine B",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-saccharin-e954",
+    "display_name": "Saccharin (E954)",
+    "aliases": [
+      "Saccharin (E954)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Saccharin \\(E954\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-sodium-nitrites",
+    "display_name": "Sodium nitrites",
+    "aliases": [
+      "Sodium nitrites"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Sodium nitrites",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-sucralose-e955",
+    "display_name": "Sucralose (E955)",
+    "aliases": [
+      "Sucralose (E955)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Sucralose \\(E955\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-sudan-dyes",
+    "display_name": "Sudan dyes",
+    "aliases": [
+      "Sudan dyes"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Sudan dyes",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-sunset-yellow-e110",
+    "display_name": "Sunset Yellow (E110)",
+    "aliases": [
+      "Sunset Yellow (E110)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Sunset Yellow \\(E110\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-synthetic-milk-additives",
+    "display_name": "Synthetic milk additives",
+    "aliases": [
+      "Synthetic milk additives"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Synthetic milk additives",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-tartrazine-e102",
+    "display_name": "Tartrazine (E102)",
+    "aliases": [
+      "Tartrazine (E102)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Tartrazine \\(E102\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-urea-in-milk",
+    "display_name": "Urea in milk",
+    "aliases": [
+      "Urea in milk"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "ingredient",
+    "regex": "Urea in milk",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "High",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India",
+      "US",
+      "EU"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-3b-cookware",
+    "display_name": "3B cookware",
+    "aliases": [
+      "3B cookware"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "3B cookware",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-alkem-laboratories-products",
+    "display_name": "Alkem laboratories products",
+    "aliases": [
+      "Alkem laboratories products"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Alkem laboratories products",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-artificial-flavoring-agents",
+    "display_name": "Artificial flavoring agents",
+    "aliases": [
+      "Artificial flavoring agents"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Artificial flavoring agents",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-aurobindo-eugia-pharma-products",
+    "display_name": "Aurobindo/Eugia pharma products",
+    "aliases": [
+      "Aurobindo/Eugia pharma products"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Aurobindo/Eugia pharma products",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-autolyzed-yeast",
+    "display_name": "Autolyzed yeast",
+    "aliases": [
+      "Autolyzed yeast"
+    ],
+    "category": "microbial",
+    "pack_match_mode": "ingredient",
+    "regex": "Autolyzed yeast",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-benzoic-acid-e210",
+    "display_name": "Benzoic acid (E210)",
+    "aliases": [
+      "Benzoic acid (E210)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Benzoic acid \\(E210\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-betel-leaves",
+    "display_name": "Betel leaves",
+    "aliases": [
+      "Betel leaves"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Betel leaves",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-carrageenan-e407",
+    "display_name": "Carrageenan (E407)",
+    "aliases": [
+      "Carrageenan (E407)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Carrageenan \\(E407\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-catch-spices",
+    "display_name": "Catch spices",
+    "aliases": [
+      "Catch spices"
     ],
     "category": "contaminant",
     "pack_match_mode": "both",
-    "regex": "(lead\\s*chromate|lead\\s*contaminat|adulterated\\s+turmeric)",
-    "action_text": "If this contamination marker appears, avoid and verify lot-level regulator notices.",
-    "verification_state": "Regulator Confirmed",
-    "confidence": "high",
+    "regex": "Catch spices",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
     "jurisdictions": [
       "US",
-      "India",
+      "EU",
       "Global"
     ],
-    "evidence_rule_ids": [
-      "lead_chromate"
-    ],
+    "evidence_rule_ids": [],
     "source_urls": [
-      "https://www.fda.gov/food/importing-food-products-united-states/import-alerts"
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
     ],
     "last_verified_at": "2026-02-13",
-    "is_provisional": false
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-chilli-peppers",
+    "display_name": "Chilli peppers",
+    "aliases": [
+      "Chilli peppers"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Chilli peppers",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-chillies",
+    "display_name": "Chillies",
+    "aliases": [
+      "Chillies"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Chillies",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-cipla-products",
+    "display_name": "Cipla products",
+    "aliases": [
+      "Cipla products"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Cipla products",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-coffee",
+    "display_name": "Coffee",
+    "aliases": [
+      "Coffee"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Coffee",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-corn-syrup",
+    "display_name": "Corn syrup",
+    "aliases": [
+      "Corn syrup"
+    ],
+    "category": "processing",
+    "pack_match_mode": "ingredient",
+    "regex": "Corn syrup",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-cumin",
+    "display_name": "Cumin",
+    "aliases": [
+      "Cumin"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Cumin",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-curcuma-turmeric",
+    "display_name": "Curcuma (turmeric)",
+    "aliases": [
+      "Curcuma (turmeric)"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Curcuma \\(turmeric\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-dextrose",
+    "display_name": "Dextrose",
+    "aliases": [
+      "Dextrose"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Dextrose",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-dr-reddy-s-products",
+    "display_name": "Dr. Reddy's products",
+    "aliases": [
+      "Dr. Reddy's products"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Dr\\. Reddy's products",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-dried-beans",
+    "display_name": "Dried beans",
+    "aliases": [
+      "Dried beans"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Dried beans",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-emulsifiers-e471-e322",
+    "display_name": "Emulsifiers (E471, E322)",
+    "aliases": [
+      "Emulsifiers (E471, E322)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Emulsifiers \\(E471, E322\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-everest-spice-mixes",
+    "display_name": "Everest spice mixes",
+    "aliases": [
+      "Everest spice mixes"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Everest spice mixes",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-excess-added-sugars",
+    "display_name": "Excess added sugars",
+    "aliases": [
+      "Excess added sugars"
+    ],
+    "category": "processing",
+    "pack_match_mode": "ingredient",
+    "regex": "Excess added sugars",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-fructose-syrup",
+    "display_name": "Fructose syrup",
+    "aliases": [
+      "Fructose syrup"
+    ],
+    "category": "processing",
+    "pack_match_mode": "ingredient",
+    "regex": "Fructose syrup",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-general-herbs-and-spices",
+    "display_name": "General herbs and spices",
+    "aliases": [
+      "General herbs and spices"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "General herbs and spices",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-general-indian-spice-shipments",
+    "display_name": "General Indian spice shipments",
+    "aliases": [
+      "General Indian spice shipments"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "General Indian spice shipments",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-glenmark-pharmaceuticals-products",
+    "display_name": "Glenmark pharmaceuticals products",
+    "aliases": [
+      "Glenmark pharmaceuticals products"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Glenmark pharmaceuticals products",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-glucose-syrup",
+    "display_name": "Glucose syrup",
+    "aliases": [
+      "Glucose syrup"
+    ],
+    "category": "processing",
+    "pack_match_mode": "ingredient",
+    "regex": "Glucose syrup",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-golden-masala",
+    "display_name": "Golden Masala",
+    "aliases": [
+      "Golden Masala"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Golden Masala",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-goldiee-masala",
+    "display_name": "Goldiee Masala",
+    "aliases": [
+      "Goldiee Masala"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Goldiee Masala",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-goyal-group-cookware",
+    "display_name": "Goyal Group cookware",
+    "aliases": [
+      "Goyal Group cookware"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Goyal Group cookware",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-grain-market-cookware",
+    "display_name": "Grain Market cookware",
+    "aliases": [
+      "Grain Market cookware"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Grain Market cookware",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-groundnut-kernels",
+    "display_name": "Groundnut kernels",
+    "aliases": [
+      "Groundnut kernels"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Groundnut kernels",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-high-sodium-salt-load",
+    "display_name": "High sodium/salt load",
+    "aliases": [
+      "High sodium/salt load"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "High sodium/salt load",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-high-total-plate-count-tpc",
+    "display_name": "High total plate count (TPC)",
+    "aliases": [
+      "High total plate count (TPC)"
+    ],
+    "category": "microbial",
+    "pack_match_mode": "ingredient",
+    "regex": "High total plate count \\(TPC\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-high-yeast-and-mould",
+    "display_name": "High yeast and mould",
+    "aliases": [
+      "High yeast and mould"
+    ],
+    "category": "microbial",
+    "pack_match_mode": "ingredient",
+    "regex": "High yeast and mould",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-hindalium-indalium-alloy-cookware",
+    "display_name": "Hindalium/Indalium alloy cookware",
+    "aliases": [
+      "Hindalium/Indalium alloy cookware"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Hindalium/Indalium alloy cookware",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-homemade-pickles-and-chutneys",
+    "display_name": "Homemade pickles and chutneys",
+    "aliases": [
+      "Homemade pickles and chutneys"
+    ],
+    "category": "microbial",
+    "pack_match_mode": "both",
+    "regex": "Homemade pickles and chutneys",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-hydrolyzed-vegetable-protein",
+    "display_name": "Hydrolyzed vegetable protein",
+    "aliases": [
+      "Hydrolyzed vegetable protein"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Hydrolyzed vegetable protein",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-ikm-aluminum-saucepan",
+    "display_name": "IKM aluminum saucepan",
+    "aliases": [
+      "IKM aluminum saucepan"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "IKM aluminum saucepan",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-invert-sugar",
+    "display_name": "Invert sugar",
+    "aliases": [
+      "Invert sugar"
+    ],
+    "category": "processing",
+    "pack_match_mode": "ingredient",
+    "regex": "Invert sugar",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-jk-vallabhdas-cookware",
+    "display_name": "JK Vallabhdas cookware",
+    "aliases": [
+      "JK Vallabhdas cookware"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "JK Vallabhdas cookware",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-liquid-semi-liquid-sweets-gulab-jamun-rasgulla",
+    "display_name": "Liquid/semi-liquid sweets (gulab jamun, rasgulla)",
+    "aliases": [
+      "Liquid/semi-liquid sweets (gulab jamun, rasgulla)"
+    ],
+    "category": "microbial",
+    "pack_match_mode": "both",
+    "regex": "Liquid/semi-liquid sweets \\(gulab jamun, rasgulla\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-lupin-products",
+    "display_name": "Lupin products",
+    "aliases": [
+      "Lupin products"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Lupin products",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-maggi-masala-ae-magic",
+    "display_name": "Maggi Masala-ae-Magic",
+    "aliases": [
+      "Maggi Masala-ae-Magic"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Maggi Masala-ae-Magic",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-malt-syrup",
+    "display_name": "Malt syrup",
+    "aliases": [
+      "Malt syrup"
+    ],
+    "category": "processing",
+    "pack_match_mode": "ingredient",
+    "regex": "Malt syrup",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-maltodextrin",
+    "display_name": "Maltodextrin",
+    "aliases": [
+      "Maltodextrin"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Maltodextrin",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-mdh-spice-blends",
+    "display_name": "MDH spice blends",
+    "aliases": [
+      "MDH spice blends"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "MDH spice blends",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-moringa-powders",
+    "display_name": "Moringa powders",
+    "aliases": [
+      "Moringa powders"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Moringa powders",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-mtr-masala",
+    "display_name": "MTR Masala",
+    "aliases": [
+      "MTR Masala"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "MTR Masala",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-mustard-oil-unprocessed-high-erucic-claim",
+    "display_name": "Mustard oil (unprocessed/high-erucic claim)",
+    "aliases": [
+      "Mustard oil (unprocessed/high-erucic claim)"
+    ],
+    "category": "oil",
+    "pack_match_mode": "both",
+    "regex": "Mustard oil \\(unprocessed/high-erucic claim\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-nut-crackers",
+    "display_name": "Nut crackers",
+    "aliases": [
+      "Nut crackers"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Nut crackers",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-nuts-various",
+    "display_name": "Nuts (various)",
+    "aliases": [
+      "Nuts (various)"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Nuts \\(various\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-octopus",
+    "display_name": "Octopus",
+    "aliases": [
+      "Octopus"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Octopus",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-paprika",
+    "display_name": "Paprika",
+    "aliases": [
+      "Paprika"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Paprika",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-patanjali-masala",
+    "display_name": "Patanjali Masala",
+    "aliases": [
+      "Patanjali Masala"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Patanjali Masala",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-patanjali-unregistered-ayurvedic-products",
+    "display_name": "Patanjali unregistered Ayurvedic products",
+    "aliases": [
+      "Patanjali unregistered Ayurvedic products"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Patanjali unregistered Ayurvedic products",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-peppercorns",
+    "display_name": "Peppercorns",
+    "aliases": [
+      "Peppercorns"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Peppercorns",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-potassium-benzoate",
+    "display_name": "Potassium benzoate",
+    "aliases": [
+      "Potassium benzoate"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Potassium benzoate",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-priya-masala",
+    "display_name": "Priya Masala",
+    "aliases": [
+      "Priya Masala"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Priya Masala",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-propionic-acid-e280",
+    "display_name": "Propionic acid (E280)",
+    "aliases": [
+      "Propionic acid (E280)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Propionic acid \\(E280\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-pushp-masala",
+    "display_name": "Pushp Masala",
+    "aliases": [
+      "Pushp Masala"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Pushp Masala",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-rajesh-masala",
+    "display_name": "Rajesh Masala",
+    "aliases": [
+      "Rajesh Masala"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Rajesh Masala",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-ramdev-masala",
+    "display_name": "Ramdev Masala",
+    "aliases": [
+      "Ramdev Masala"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Ramdev Masala",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-refined-carbohydrates-maida",
+    "display_name": "Refined carbohydrates (maida)",
+    "aliases": [
+      "Refined carbohydrates (maida)"
+    ],
+    "category": "processing",
+    "pack_match_mode": "ingredient",
+    "regex": "Refined carbohydrates \\(maida\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-rice",
+    "display_name": "Rice",
+    "aliases": [
+      "Rice"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Rice",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-royal-kitchen-cookware",
+    "display_name": "Royal Kitchen cookware",
+    "aliases": [
+      "Royal Kitchen cookware"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Royal Kitchen cookware",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-saffron",
+    "display_name": "Saffron",
+    "aliases": [
+      "Saffron"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Saffron",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-saraswati-strips-cookware",
+    "display_name": "Saraswati Strips cookware",
+    "aliases": [
+      "Saraswati Strips cookware"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Saraswati Strips cookware",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-seeds-various",
+    "display_name": "Seeds (various)",
+    "aliases": [
+      "Seeds (various)"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Seeds \\(various\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-sesame-seeds",
+    "display_name": "Sesame seeds",
+    "aliases": [
+      "Sesame seeds"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Sesame seeds",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-shatavari-powders",
+    "display_name": "Shatavari powders",
+    "aliases": [
+      "Shatavari powders"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Shatavari powders",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-silver-horse-cookware",
+    "display_name": "Silver Horse cookware",
+    "aliases": [
+      "Silver Horse cookware"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Silver Horse cookware",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-sodium-benzoate",
+    "display_name": "Sodium benzoate",
+    "aliases": [
+      "Sodium benzoate"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Sodium benzoate",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-sorbic-acid-e200",
+    "display_name": "Sorbic acid (E200)",
+    "aliases": [
+      "Sorbic acid (E200)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Sorbic acid \\(E200\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-squid",
+    "display_name": "Squid",
+    "aliases": [
+      "Squid"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Squid",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-steviol-glycosides-ins-960",
+    "display_name": "Steviol glycosides (INS 960)",
+    "aliases": [
+      "Steviol glycosides (INS 960)"
+    ],
+    "category": "additive",
+    "pack_match_mode": "ingredient",
+    "regex": "Steviol glycosides \\(INS 960\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-sun-pharma-products",
+    "display_name": "Sun Pharma products",
+    "aliases": [
+      "Sun Pharma products"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Sun Pharma products",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-sunflower-seeds",
+    "display_name": "Sunflower seeds",
+    "aliases": [
+      "Sunflower seeds"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Sunflower seeds",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-supari-areca-nut",
+    "display_name": "Supari (areca nut)",
+    "aliases": [
+      "Supari (areca nut)"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Supari \\(areca nut\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-swad-spices",
+    "display_name": "Swad spices",
+    "aliases": [
+      "Swad spices"
+    ],
+    "category": "contaminant",
+    "pack_match_mode": "both",
+    "regex": "Swad spices",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-tiger-white-cookware",
+    "display_name": "Tiger White cookware",
+    "aliases": [
+      "Tiger White cookware"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Tiger White cookware",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-torrent-pharmaceuticals-products",
+    "display_name": "Torrent pharmaceuticals products",
+    "aliases": [
+      "Torrent pharmaceuticals products"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Torrent pharmaceuticals products",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-town-food-service-equipment-cookware",
+    "display_name": "Town Food Service Equipment cookware",
+    "aliases": [
+      "Town Food Service Equipment cookware"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Town Food Service Equipment cookware",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-unregistered-ayurvedic-herbal-medicines",
+    "display_name": "Unregistered Ayurvedic herbal medicines",
+    "aliases": [
+      "Unregistered Ayurvedic herbal medicines"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Unregistered Ayurvedic herbal medicines",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-vegetable-shortening",
+    "display_name": "Vegetable shortening",
+    "aliases": [
+      "Vegetable shortening"
+    ],
+    "category": "oil",
+    "pack_match_mode": "ingredient",
+    "regex": "Vegetable shortening",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-yeast-extract-hidden-msg",
+    "display_name": "Yeast extract (hidden MSG)",
+    "aliases": [
+      "Yeast extract (hidden MSG)"
+    ],
+    "category": "microbial",
+    "pack_match_mode": "ingredient",
+    "regex": "Yeast extract \\(hidden MSG\\)",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "Global",
+      "India"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-zydus-pharmaceuticals-products",
+    "display_name": "Zydus pharmaceuticals products",
+    "aliases": [
+      "Zydus pharmaceuticals products"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Zydus pharmaceuticals products",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Moderate",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-avocados",
+    "display_name": "Avocados",
+    "aliases": [
+      "Avocados"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Avocados",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Low",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-durian-fruit",
+    "display_name": "Durian fruit",
+    "aliases": [
+      "Durian fruit"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Durian fruit",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Low",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-ghee",
+    "display_name": "Ghee",
+    "aliases": [
+      "Ghee"
+    ],
+    "category": "oil",
+    "pack_match_mode": "both",
+    "regex": "Ghee",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Low",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
+  },
+  {
+    "id": "avoid-raw-almonds",
+    "display_name": "Raw almonds",
+    "aliases": [
+      "Raw almonds"
+    ],
+    "category": "other",
+    "pack_match_mode": "both",
+    "regex": "Raw almonds",
+    "action_text": "If listed on pack, avoid routine use and verify regulator updates.",
+    "verification_state": "Under Review",
+    "severity": "Low",
+    "confidence": "low",
+    "jurisdictions": [
+      "US",
+      "EU",
+      "Global"
+    ],
+    "evidence_rule_ids": [],
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "last_verified_at": "2026-02-13",
+    "is_provisional": true
   }
 ]

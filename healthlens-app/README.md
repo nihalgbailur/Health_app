@@ -148,6 +148,15 @@ Avoid behavior:
 - `None`: no avoid marker matched current pack text.
 - `Unknown`: pack/regulatory context missing for avoid check.
 
+Avoid list format:
+- Compact name-first rows (no long explanation text).
+- Status badge: `Regulator Confirmed` or `Under Review`.
+- Severity badge with color:
+  - `High` = red
+  - `Moderate` = amber
+  - `Low` = green
+- Marker corpus is expanded from the banned-products PDF extraction and grouped by category/search.
+
 Policy safeguards:
 - Marker list is ingredient-first and evidence-tiered.
 - Under-review leads stay explicitly labeled.
