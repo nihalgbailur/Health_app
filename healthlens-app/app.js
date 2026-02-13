@@ -32,6 +32,7 @@ const OPEN_FOOD_FACTS_API = 'https://world.openfoodfacts.org/api/v2/product';
 const OPEN_FOOD_FACTS_API_V0 = 'https://world.openfoodfacts.org/api/v0/product';
 const LIVE_LOOKUP_TIMEOUT_MS = 4500;
 const STALE_REFRESH_HOURS = 24;
+const CAMERA_BARCODE_FORMATS = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf'];
 
 const state = {
   activeTab: 'home',
@@ -41,7 +42,16 @@ const state = {
   coachIndex: readCoachIndex(),
   lastScan: null,
   deferredInstallPrompt: null,
-  isScanning: false
+  isScanning: false,
+  camera: {
+    isOpen: false,
+    targetInput: 'scan',
+    stream: null,
+    detector: null,
+    rafId: 0,
+    lastValue: '',
+    lastDetectedAt: 0
+  }
 };
 
 const elements = {
@@ -69,7 +79,14 @@ const elements = {
   installBtn: document.querySelector('#installBtn'),
   queueCount: document.querySelector('#queueCount'),
   exportQueueBtn: document.querySelector('#exportQueueBtn'),
-  clearQueueBtn: document.querySelector('#clearQueueBtn')
+  clearQueueBtn: document.querySelector('#clearQueueBtn'),
+  openHomeCameraBtn: document.querySelector('#openHomeCameraBtn'),
+  openScanCameraBtn: document.querySelector('#openScanCameraBtn'),
+  cameraScannerModal: document.querySelector('#cameraScannerModal'),
+  closeCameraScannerBtn: document.querySelector('#closeCameraScannerBtn'),
+  useManualBarcodeBtn: document.querySelector('#useManualBarcodeBtn'),
+  cameraVideo: document.querySelector('#cameraVideo'),
+  cameraStatus: document.querySelector('#cameraStatus')
 };
 
 void init();
@@ -82,6 +99,7 @@ async function init() {
   bindHomeActions();
   bindCoach();
   bindSavedAndCompare();
+  bindCameraScanner();
   bindPwaInstall();
   registerServiceWorker();
 
@@ -123,12 +141,20 @@ function bindScannerForms() {
   elements.homeScanForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const barcode = elements.homeBarcode.value.trim();
+    if (!barcode) {
+      void openCameraScanner('home');
+      return;
+    }
     void runBarcodeScan(barcode);
   });
 
   elements.scanBarcodeForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const barcode = elements.scanBarcode.value.trim();
+    if (!barcode) {
+      void openCameraScanner('scan');
+      return;
+    }
     void runBarcodeScan(barcode);
   });
 
@@ -205,6 +231,18 @@ function bindHomeActions() {
       renderQueueState();
     });
   }
+
+  if (elements.openHomeCameraBtn) {
+    elements.openHomeCameraBtn.addEventListener('click', () => {
+      void openCameraScanner('home');
+    });
+  }
+
+  if (elements.openScanCameraBtn) {
+    elements.openScanCameraBtn.addEventListener('click', () => {
+      void openCameraScanner('scan');
+    });
+  }
 }
 
 function bindCoach() {
@@ -259,11 +297,215 @@ function bindPwaInstall() {
   });
 }
 
+function bindCameraScanner() {
+  if (!elements.cameraScannerModal) return;
+
+  if (elements.closeCameraScannerBtn) {
+    elements.closeCameraScannerBtn.addEventListener('click', () => {
+      closeCameraScanner();
+    });
+  }
+
+  if (elements.useManualBarcodeBtn) {
+    elements.useManualBarcodeBtn.addEventListener('click', () => {
+      const target = state.camera.targetInput === 'home' ? 'home' : 'scan';
+      closeCameraScanner();
+      focusBarcodeInput(target);
+    });
+  }
+
+  elements.cameraScannerModal.addEventListener('click', (event) => {
+    if (event.target === elements.cameraScannerModal) {
+      closeCameraScanner();
+    }
+  });
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && state.camera.isOpen) {
+      closeCameraScanner();
+    }
+  });
+}
+
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js').catch(() => {
       // No-op for prototype mode.
     });
+  }
+}
+
+function focusBarcodeInput(targetInput = 'scan') {
+  const target = targetInput === 'home' ? 'home' : 'scan';
+  setActiveTab(target);
+  const input = target === 'home' ? elements.homeBarcode : elements.scanBarcode;
+  input?.focus();
+}
+
+function setCameraStatus(message, isError = false) {
+  if (!elements.cameraStatus) return;
+  elements.cameraStatus.textContent = message;
+  elements.cameraStatus.classList.toggle('camera-status-error', isError);
+}
+
+function normalizeScannedBarcode(rawValue) {
+  const cleaned = String(rawValue || '')
+    .replace(/\s+/g, '')
+    .replace(/[^0-9A-Za-z]/g, '')
+    .trim();
+  if (!cleaned) return '';
+  if (/^\d{8,14}$/.test(cleaned)) return cleaned;
+  return cleaned.length >= 8 ? cleaned : '';
+}
+
+async function createBarcodeDetector() {
+  if (!('BarcodeDetector' in window)) return null;
+
+  try {
+    if (typeof window.BarcodeDetector.getSupportedFormats === 'function') {
+      const supported = await window.BarcodeDetector.getSupportedFormats();
+      const formats = CAMERA_BARCODE_FORMATS.filter((format) => supported.includes(format));
+      if (formats.length) {
+        return new window.BarcodeDetector({ formats });
+      }
+    }
+    return new window.BarcodeDetector();
+  } catch {
+    return null;
+  }
+}
+
+function stopCameraStream() {
+  if (state.camera.stream) {
+    for (const track of state.camera.stream.getTracks()) {
+      track.stop();
+    }
+    state.camera.stream = null;
+  }
+
+  if (elements.cameraVideo?.srcObject) {
+    elements.cameraVideo.srcObject = null;
+  }
+}
+
+function closeCameraScanner() {
+  if (state.camera.rafId) {
+    cancelAnimationFrame(state.camera.rafId);
+  }
+
+  state.camera.rafId = 0;
+  state.camera.isOpen = false;
+  state.camera.detector = null;
+  state.camera.lastValue = '';
+  stopCameraStream();
+
+  if (elements.cameraScannerModal) {
+    elements.cameraScannerModal.hidden = true;
+  }
+  document.body.classList.remove('camera-open');
+}
+
+async function finalizeCameraBarcode(rawValue) {
+  const normalized = normalizeScannedBarcode(rawValue);
+  if (!normalized) return;
+
+  const now = Date.now();
+  if (state.camera.lastValue === normalized && now - state.camera.lastDetectedAt < 1400) {
+    return;
+  }
+
+  state.camera.lastValue = normalized;
+  state.camera.lastDetectedAt = now;
+  setCameraStatus(`Captured ${normalized}. Checking now...`);
+  closeCameraScanner();
+
+  elements.homeBarcode.value = normalized;
+  elements.scanBarcode.value = normalized;
+  await runBarcodeScan(normalized);
+}
+
+async function runCameraDetectionLoop() {
+  if (!state.camera.isOpen || !state.camera.detector || !elements.cameraVideo) return;
+
+  try {
+    if (elements.cameraVideo.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      const detected = await state.camera.detector.detect(elements.cameraVideo);
+      const firstHit = detected
+        .map((entry) => normalizeScannedBarcode(entry?.rawValue))
+        .find((value) => Boolean(value));
+
+      if (firstHit) {
+        await finalizeCameraBarcode(firstHit);
+        return;
+      }
+    }
+  } catch {
+    // Keep looping; camera frames may fail intermittently on some devices.
+  }
+
+  state.camera.rafId = requestAnimationFrame(() => {
+    void runCameraDetectionLoop();
+  });
+}
+
+async function openCameraScanner(targetInput = 'scan') {
+  if (state.camera.isOpen) return;
+
+  if (!window.isSecureContext && location.hostname !== 'localhost') {
+    renderManualInputError('Camera scan requires HTTPS. Open this app on a secure URL and try again.');
+    return;
+  }
+
+  if (!navigator.mediaDevices?.getUserMedia) {
+    renderManualInputError('Camera is not available in this browser. Enter barcode manually.');
+    return;
+  }
+
+  state.camera.targetInput = targetInput === 'home' ? 'home' : 'scan';
+  state.camera.isOpen = true;
+  state.camera.lastDetectedAt = 0;
+  state.camera.lastValue = '';
+
+  if (elements.cameraScannerModal) {
+    elements.cameraScannerModal.hidden = false;
+  }
+  document.body.classList.add('camera-open');
+  setCameraStatus('Requesting camera permission...');
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      }
+    });
+
+    state.camera.stream = stream;
+
+    if (!elements.cameraVideo) {
+      throw new Error('Camera video element missing.');
+    }
+
+    elements.cameraVideo.srcObject = stream;
+    await elements.cameraVideo.play();
+
+    const detector = await createBarcodeDetector();
+    if (!detector) {
+      stopCameraStream();
+      setCameraStatus('Live barcode detection is not supported on this browser. Use manual barcode entry.', true);
+      return;
+    }
+
+    state.camera.detector = detector;
+    setCameraStatus('Point camera at barcode. Capture happens automatically.');
+    state.camera.rafId = requestAnimationFrame(() => {
+      void runCameraDetectionLoop();
+    });
+  } catch {
+    closeCameraScanner();
+    renderManualInputError('Camera permission was blocked or unavailable. Enable camera access and retry.');
   }
 }
 

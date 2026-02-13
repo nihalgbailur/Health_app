@@ -1,4 +1,4 @@
-const CACHE_NAME = 'healthlens-v7';
+const CACHE_NAME = 'healthlens-v8';
 const CORE_ASSETS = [
   './',
   './index.html',

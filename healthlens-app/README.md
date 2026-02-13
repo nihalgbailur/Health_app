@@ -40,6 +40,11 @@ python3 -m http.server 8080
 
 Open `http://localhost:8080` in a browser.
 
+Camera scan behavior:
+- If barcode field is empty, tapping `Scan now` (Home) or `Check` (Scan tab) opens camera capture.
+- You can also tap `Open camera` buttons.
+- Camera capture requires HTTPS on production (`localhost` works locally).
+
 ## Run tests
 
 From `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app`:
@@ -125,6 +130,13 @@ Production URL placeholder: `https://<your-site>.netlify.app`
 - Confirm manifest request is `200` and parsed.
 - Confirm service worker controls the current page (reload once after first registration).
 - Use Chrome menu install option if `beforeinstallprompt` does not appear immediately.
+
+### Troubleshooting: camera scan not opening
+
+- Confirm you are on HTTPS (`https://<your-site>.netlify.app`) or localhost.
+- Allow camera permission in browser settings.
+- Use Android Chrome latest version for best BarcodeDetector support.
+- If live detection is unsupported on a browser, use manual barcode entry.
 
 ## Trust policy implemented
 

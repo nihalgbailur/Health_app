@@ -39,6 +39,10 @@
               />
               <button type="submit" class="primary-btn">Scan now</button>
             </form>
+            <div class="badge-row" style="margin-top:10px;">
+              <button id="openHomeCameraBtn" type="button" class="ghost-btn">Open camera</button>
+              <span class="meta">Leave barcode blank and tap <strong>Scan now</strong> for camera capture.</span>
+            </div>
           </article>
 
           <article class="card reveal">
@@ -83,6 +87,10 @@
                   placeholder="Enter barcode"
                 />
                 <button type="submit" class="primary-btn">Check</button>
+              </div>
+              <div class="badge-row">
+                <button id="openScanCameraBtn" type="button" class="ghost-btn">Open camera</button>
+                <span class="meta">If barcode is empty, tapping <strong>Check</strong> opens camera scan.</span>
               </div>
             </form>
 
@@ -157,6 +165,22 @@
           <strong>Under Review</strong> claims where regulator confirmation is pending.
         </p>
       </footer>
+    </div>
+
+    <div id="cameraScannerModal" class="camera-modal" hidden>
+      <div class="camera-panel" role="dialog" aria-modal="true" aria-labelledby="cameraTitle">
+        <div class="camera-head">
+          <h3 id="cameraTitle">Scan barcode</h3>
+          <button id="closeCameraScannerBtn" type="button" class="ghost-btn">Close</button>
+        </div>
+        <div class="camera-video-shell">
+          <video id="cameraVideo" autoplay muted playsinline></video>
+        </div>
+        <div class="camera-foot">
+          <p id="cameraStatus" class="camera-status">Point camera at barcode. Capture happens automatically.</p>
+          <button id="useManualBarcodeBtn" type="button" class="secondary-btn">Use manual barcode entry</button>
+        </div>
+      </div>
     </div>
 
     <script type="module" src="./app.js"></script>
