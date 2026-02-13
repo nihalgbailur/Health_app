@@ -34,6 +34,8 @@ function run() {
   assert.match(tableHtml, /Daily target/);
   assert.match(legendHtml, /Low \(Good\)/);
   assert.match(legendHtml, /High \(Risk\)/);
+  assert.equal(typeof fullScan.avoid_verdict, 'string');
+  assert.equal(Array.isArray(fullScan.avoid_matches), true);
 
   // 2) Partial nutrition data still renders all tracked nutrient rows with Unknown values.
   const partialScan = evaluateProduct({
@@ -82,6 +84,23 @@ function run() {
   assert.match(chipsHtml, /High \(Risk\)/);
   const highFiberChipsHtml = renderNutritionChipsHTML(highFiberScan.nutrition_assessment);
   assert.match(highFiberChipsHtml, /High \(Good\)/);
+
+  // 5) Avoid verdict and nutrition table should coexist on scans.
+  const avoidScan = evaluateProduct({
+    id: 'table-avoid',
+    barcode: '1000000000004',
+    name: 'Avoid Probe',
+    brand: 'HealthLens',
+    category: 'Snacks',
+    region_availability: ['Global'],
+    ingredients_raw: ['wheat flour', 'partially hydrogenated vegetable oil'],
+    nutrition_per_100g: {
+      energy_kcal: 320,
+      total_fat_g: 14
+    }
+  });
+  assert.equal(avoidScan.avoid_verdict, 'Avoid');
+  assert.match(renderNutritionTableHTML(avoidScan.nutrition_assessment), /class="nutrition-table"/);
 
   console.log('Nutrition table integration tests passed.');
 }

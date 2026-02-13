@@ -71,6 +71,24 @@
  */
 
 /**
+ * @typedef {Object} AvoidMarker
+ * @property {string} id
+ * @property {string} display_name
+ * @property {string[]} aliases
+ * @property {'additive' | 'contaminant' | 'oil' | 'processing' | 'microbial' | 'other'} category
+ * @property {'ingredient' | 'claim' | 'both'} pack_match_mode
+ * @property {string} regex
+ * @property {string} action_text
+ * @property {'Regulator Confirmed' | 'Independent Evidence' | 'Under Review'} verification_state
+ * @property {'high' | 'medium' | 'low'} confidence
+ * @property {string[]} jurisdictions
+ * @property {string[]} evidence_rule_ids
+ * @property {string[]} source_urls
+ * @property {string} last_verified_at
+ * @property {boolean} is_provisional
+ */
+
+/**
  * @typedef {Object} WatchdogItem
  * @property {string} id
  * @property {string} title
@@ -551,3 +569,103 @@ export const SOURCE_BADGE_COLORS = {
   'Independent Testing': 'var(--badge-independent)',
   'Under Review': 'var(--badge-review)'
 };
+
+/** @type {AvoidMarker[]} */
+export const AVOID_MARKERS = [
+  {
+    id: 'avoid-trans-fat-pho',
+    display_name: 'Partially hydrogenated oils (PHO) / trans-fat markers',
+    aliases: ['partially hydrogenated', 'hydrogenated vegetable oil', 'pho', 'trans fat', 'shortening'],
+    category: 'processing',
+    pack_match_mode: 'ingredient',
+    regex: '(partially\\s+hydrogenated|hydrogenated\\s+vegetable\\s+oil|\\bpho\\b|trans\\s*fat|shortening)',
+    action_text: 'If listed on pack, skip routine consumption and pick a PHO-free alternative.',
+    verification_state: 'Regulator Confirmed',
+    confidence: 'high',
+    jurisdictions: ['Global', 'US', 'EU', 'India'],
+    evidence_rule_ids: ['trans_fat_pho'],
+    source_urls: ['https://www.who.int/teams/nutrition-and-food-safety/replace-trans-fat'],
+    last_verified_at: '2026-02-13',
+    is_provisional: false
+  },
+  {
+    id: 'avoid-potassium-bromate',
+    display_name: 'Potassium bromate / bromated flour improvers',
+    aliases: ['potassium bromate', 'bromated flour', 'e924', 'e924a', 'e924b'],
+    category: 'additive',
+    pack_match_mode: 'ingredient',
+    regex: '(potassium\\s+bromate|bromated\\s+flour|\\be924[a-b]?\\b)',
+    action_text: 'If listed on pack, avoid and choose products without bromate improvers.',
+    verification_state: 'Regulator Confirmed',
+    confidence: 'high',
+    jurisdictions: ['India', 'US', 'EU', 'Global'],
+    evidence_rule_ids: ['potassium_bromate'],
+    source_urls: ['https://fssai.gov.in'],
+    last_verified_at: '2026-02-13',
+    is_provisional: false
+  },
+  {
+    id: 'avoid-banned-dyes',
+    display_name: 'Textile/synthetic dye markers (for example metanil yellow, erythrosine)',
+    aliases: ['metanil yellow', 'erythrosine', 'red dye 3', 'e127', 'tartrazine', 'e102'],
+    category: 'additive',
+    pack_match_mode: 'ingredient',
+    regex: '(metanil\\s+yellow|erythrosine|red\\s*dye\\s*3|\\be127\\b|tartrazine|\\be102\\b)',
+    action_text: 'If listed on pack, avoid frequent use and prefer no-added-color alternatives.',
+    verification_state: 'Under Review',
+    confidence: 'low',
+    jurisdictions: ['India', 'US', 'EU', 'Global'],
+    evidence_rule_ids: ['metanil_yellow'],
+    source_urls: ['local://pdf-lead/banned-indian-products-grok-2026-02-13'],
+    last_verified_at: '2026-02-13',
+    is_provisional: true
+  },
+  {
+    id: 'avoid-mustard-erucic-claim',
+    display_name: 'High-erucic mustard oil claim marker',
+    aliases: ['high erucic acid', 'unprocessed mustard oil', 'kachi ghani mustard'],
+    category: 'oil',
+    pack_match_mode: 'claim',
+    regex: '(high\\s+erucic|unprocessed\\s+mustard\\s+oil|kachi\\s+ghani\\s+mustard)',
+    action_text: 'Treat as caution unless authority confirmation is available; compare refined alternatives.',
+    verification_state: 'Under Review',
+    confidence: 'low',
+    jurisdictions: ['Global'],
+    evidence_rule_ids: [],
+    source_urls: ['local://pdf-lead/banned-indian-products-grok-2026-02-13'],
+    last_verified_at: '2026-02-13',
+    is_provisional: true
+  },
+  {
+    id: 'avoid-spice-contamination-claims',
+    display_name: 'Spice contamination claim marker (ethylene oxide/salmonella)',
+    aliases: ['ethylene oxide', 'salmonella', 'contaminated spice batch'],
+    category: 'contaminant',
+    pack_match_mode: 'both',
+    regex: '(ethylene\\s+oxide|salmonella|contaminated\\s+spice)',
+    action_text: 'Use regulator recall/import-refusal links to verify the exact batch before use.',
+    verification_state: 'Under Review',
+    confidence: 'medium',
+    jurisdictions: ['US', 'EU', 'Global'],
+    evidence_rule_ids: [],
+    source_urls: ['https://www.food.gov.uk/news-alerts', 'https://www.accessdata.fda.gov/cms_ia/importalert_16.html'],
+    last_verified_at: '2026-02-13',
+    is_provisional: true
+  },
+  {
+    id: 'avoid-lead-adulteration',
+    display_name: 'Lead adulteration marker',
+    aliases: ['lead chromate', 'lead contaminated', 'adulterated turmeric'],
+    category: 'contaminant',
+    pack_match_mode: 'both',
+    regex: '(lead\\s*chromate|lead\\s*contaminat|adulterated\\s+turmeric)',
+    action_text: 'If this contamination marker appears, avoid and verify lot-level regulator notices.',
+    verification_state: 'Regulator Confirmed',
+    confidence: 'high',
+    jurisdictions: ['US', 'India', 'Global'],
+    evidence_rule_ids: ['lead_chromate'],
+    source_urls: ['https://www.fda.gov/food/importing-food-products-united-states/import-alerts'],
+    last_verified_at: '2026-02-13',
+    is_provisional: false
+  }
+];

@@ -1,4 +1,4 @@
-import { EVIDENCE_BY_RULE } from './data.mjs';
+import { AVOID_MARKERS, EVIDENCE_BY_RULE } from './data.mjs';
 import {
   getDefaultProfile,
   getDefaultProfileId,
@@ -21,6 +21,20 @@ import {
  */
 
 /** @typedef {import('./data.mjs').RegulatoryActionItem} RegulatoryActionItem */
+/** @typedef {import('./data.mjs').AvoidMarker} AvoidMarker */
+
+/**
+ * @typedef {Object} AvoidMatch
+ * @property {string} marker_id
+ * @property {string} matched_text
+ * @property {'ingredients' | 'manual_input' | 'product_name' | 'regulatory_action'} match_source
+ * @property {'Regulator Confirmed' | 'Independent Evidence' | 'Under Review'} verification_state
+ * @property {string} action_text
+ * @property {string} display_name
+ * @property {'high' | 'medium' | 'low'} confidence
+ * @property {'additive' | 'contaminant' | 'oil' | 'processing' | 'microbial' | 'other'} category
+ * @property {string[]} source_urls
+ */
 
 /**
  * @typedef {Object} FrameworkVerdict
@@ -68,6 +82,9 @@ import {
  * @property {FrameworkVerdict[]} framework_verdicts
  * @property {Severity} global_guardrail_verdict
  * @property {RegulatoryActionItem[]} regulatory_action_matches
+ * @property {'Avoid' | 'Caution' | 'None' | 'Unknown'} avoid_verdict
+ * @property {AvoidMatch[]} avoid_matches
+ * @property {string[]} avoid_notes
  * @property {'high' | 'medium' | 'low'} overall_confidence
  * @property {string[]} confidence_notes
  */
@@ -220,6 +237,72 @@ function normalizeText(value) {
     .replace(/[^a-z0-9\s]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+/**
+ * @param {string[]} aliases
+ */
+function normalizeAliases(aliases) {
+  return Array.isArray(aliases)
+    ? aliases
+        .map((value) => normalizeText(value))
+        .filter(Boolean)
+        .sort((left, right) => right.length - left.length)
+    : [];
+}
+
+/**
+ * @param {AvoidMarker} marker
+ * @returns {RegExp | null}
+ */
+function compileMarkerRegex(marker) {
+  try {
+    const source = String(marker?.regex || '').trim();
+    if (!source) return null;
+    return new RegExp(source, 'i');
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * @param {string} input
+ * @param {AvoidMarker} marker
+ */
+function findMarkerTextMatch(input, marker) {
+  const rawText = String(input || '');
+  if (!rawText.trim()) return '';
+  const normalizedText = normalizeText(rawText);
+
+  const aliasHit = normalizeAliases(marker.aliases).find((alias) => normalizedText.includes(alias));
+  if (aliasHit) return aliasHit;
+
+  const compiled = compileMarkerRegex(marker);
+  if (!compiled) return '';
+  const match = compiled.exec(rawText) || compiled.exec(normalizedText);
+  return match?.[0] ? String(match[0]).trim() : '';
+}
+
+/**
+ * @param {'ingredients' | 'manual_input' | 'product_name' | 'regulatory_action'} source
+ * @param {string} text
+ * @param {AvoidMarker} marker
+ * @returns {AvoidMatch | null}
+ */
+function buildAvoidMatch(source, text, marker) {
+  const matchedText = findMarkerTextMatch(text, marker);
+  if (!matchedText) return null;
+  return {
+    marker_id: String(marker.id),
+    matched_text: matchedText,
+    match_source: source,
+    verification_state: marker.verification_state,
+    action_text: marker.action_text,
+    display_name: marker.display_name,
+    confidence: marker.confidence,
+    category: marker.category,
+    source_urls: Array.isArray(marker.source_urls) ? marker.source_urls : []
+  };
 }
 
 /**
@@ -411,6 +494,106 @@ function computeRegulatoryFrameworkVerdict(matches) {
     severity,
     triggered_rules: [...new Set(triggeredRules)],
     unknown_reasons: unknownReasons
+  };
+}
+
+/**
+ * @param {import('./data.mjs').ProductProfile | null} product
+ * @param {string[]} ingredients
+ * @param {string | undefined} manualInput
+ * @param {RegulatoryActionItem[]} regulatoryActions
+ * @param {AvoidMarker[] | undefined} avoidMarkers
+ * @returns {{avoid_verdict: 'Avoid' | 'Caution' | 'None' | 'Unknown', avoid_matches: AvoidMatch[], avoid_notes: string[]}}
+ */
+export function evaluateAvoidMarkers(product, ingredients, manualInput, regulatoryActions, avoidMarkers) {
+  const markers = Array.isArray(avoidMarkers) && avoidMarkers.length ? avoidMarkers : AVOID_MARKERS;
+
+  const ingredientText = Array.isArray(ingredients) ? ingredients.join(', ') : '';
+  const manualText = String(manualInput || '').trim();
+  const productText = `${product?.name || ''} ${product?.brand || ''} ${product?.category || ''}`.trim();
+  const regulatoryText = Array.isArray(regulatoryActions)
+    ? regulatoryActions
+        .map((item) => `${item?.product_name || ''} ${item?.brand || ''} ${item?.reason_category || ''} ${item?.hazard || ''}`)
+        .join(' ')
+        .trim()
+    : '';
+
+  const hasPackText = Boolean(ingredientText) || Boolean(manualText);
+  const hasRegulatoryText = Boolean(regulatoryText);
+  if (!hasPackText && !hasRegulatoryText) {
+    return {
+      avoid_verdict: 'Unknown',
+      avoid_matches: [],
+      avoid_notes: ['Avoid check is unknown because pack text and regulatory context are missing.']
+    };
+  }
+
+  /** @type {AvoidMatch[]} */
+  const matches = [];
+
+  for (const marker of markers) {
+    const mode = String(marker?.pack_match_mode || 'both');
+
+    if (mode === 'ingredient' || mode === 'both') {
+      const ingredientMatch = buildAvoidMatch('ingredients', ingredientText, marker);
+      if (ingredientMatch) {
+        matches.push(ingredientMatch);
+        continue;
+      }
+
+      const manualMatch = buildAvoidMatch('manual_input', manualText, marker);
+      if (manualMatch) {
+        matches.push(manualMatch);
+        continue;
+      }
+    }
+
+    if (mode === 'claim' || mode === 'both') {
+      const productMatch = buildAvoidMatch('product_name', productText, marker);
+      if (productMatch) {
+        matches.push(productMatch);
+        continue;
+      }
+
+      const regulatoryMatch = buildAvoidMatch('regulatory_action', regulatoryText, marker);
+      if (regulatoryMatch) {
+        matches.push(regulatoryMatch);
+      }
+    }
+  }
+
+  const deduped = matches.filter((entry, index, arr) => {
+    return arr.findIndex((item) => item.marker_id === entry.marker_id && item.match_source === entry.match_source) === index;
+  });
+
+  if (!deduped.length) {
+    return {
+      avoid_verdict: 'None',
+      avoid_matches: [],
+      avoid_notes: ['No avoid marker matched current pack text or linked regulatory actions.']
+    };
+  }
+
+  const confirmedHigh = deduped.some(
+    (entry) => entry.verification_state === 'Regulator Confirmed' && entry.confidence === 'high'
+  );
+  const underReviewCount = deduped.filter((entry) => entry.verification_state === 'Under Review').length;
+  const provisionalCount = deduped.filter((entry) => entry.verification_state !== 'Regulator Confirmed').length;
+
+  /** @type {string[]} */
+  const notes = [];
+  notes.push(`${deduped.length} avoid marker(s) matched from ingredients/claims.`);
+  if (underReviewCount > 0) {
+    notes.push(`${underReviewCount} marker(s) are under review and not regulator-confirmed.`);
+  }
+  if (provisionalCount > 0) {
+    notes.push('Some avoid markers use provisional or secondary-source inputs.');
+  }
+
+  return {
+    avoid_verdict: confirmedHigh ? 'Avoid' : 'Caution',
+    avoid_matches: deduped,
+    avoid_notes: notes
   };
 }
 
@@ -871,14 +1054,22 @@ export function evaluateNutritionRisks(assessments) {
 
 /**
  * @param {import('./data.mjs').ProductProfile | null} product
- * @param {{ ingredients?: string[], regulatory_actions?: RegulatoryActionItem[] }} [options]
+ * @param {{ ingredients?: string[], manual_input?: string, regulatory_actions?: RegulatoryActionItem[], avoid_markers?: AvoidMarker[] }} [options]
  * @returns {ScanResult}
  */
 export function evaluateProduct(product, options = {}) {
   const ingredients = options.ingredients || product?.ingredients_raw || [];
+  const manualInput = options.manual_input;
   const nutrition = product?.nutrition_per_100g;
   const productForm = resolveProductForm(product);
   const regulatoryActionMatches = matchRegulatoryActions(product, options.regulatory_actions);
+  const avoidResult = evaluateAvoidMarkers(
+    product,
+    ingredients,
+    manualInput,
+    regulatoryActionMatches,
+    options.avoid_markers
+  );
 
   const ingredientSignals = evaluateIngredientRisks(ingredients);
   const nutritionAssessments = assessNutrition(nutrition, { product_form: productForm });
@@ -924,6 +1115,9 @@ export function evaluateProduct(product, options = {}) {
     framework_verdicts: frameworkVerdicts,
     global_guardrail_verdict: globalGuardrailVerdict,
     regulatory_action_matches: regulatoryActionMatches,
+    avoid_verdict: avoidResult.avoid_verdict,
+    avoid_matches: avoidResult.avoid_matches,
+    avoid_notes: avoidResult.avoid_notes,
     overall_confidence: confidenceBundle.overall_confidence,
     confidence_notes: confidenceBundle.confidence_notes
   };
@@ -1096,7 +1290,7 @@ function hasUsableNutritionData(nutrition) {
  * @param {import('./data.mjs').ProductProfile[]} products
  * @param {import('./data.mjs').ProductProfile} selected
  * @param {ScanResult} selectedScan
- * @param {{ regulatory_actions?: RegulatoryActionItem[] }} [options]
+ * @param {{ regulatory_actions?: RegulatoryActionItem[], avoid_markers?: AvoidMarker[] }} [options]
  * @returns {Array<{candidate_product_id: string, reason_codes: string[], net_improvement_score: number}>}
  */
 export function recommendSwaps(products, selected, selectedScan, options = {}) {
@@ -1137,7 +1331,7 @@ export function recommendSwaps(products, selected, selectedScan, options = {}) {
 /**
  * @param {import('./data.mjs').ProductProfile} left
  * @param {import('./data.mjs').ProductProfile} right
- * @param {{ regulatory_actions?: RegulatoryActionItem[] }} [options]
+ * @param {{ regulatory_actions?: RegulatoryActionItem[], avoid_markers?: AvoidMarker[] }} [options]
  */
 export function compareProducts(left, right, options = {}) {
   const leftScan = evaluateProduct(left, options);

@@ -7,6 +7,7 @@ Mobile-first PWA prototype implementing the HealthLens plan:
 - Watchdog Lite
 - Coach Lite
 - Saved + Compare
+- Avoid tab (ingredient-first "if seen on pack, skip" guidance with confidence tiers)
 - Live barcode fallback lookup (OpenFoodFacts) when barcode is not in local seed data
 - Durable API-first catalog ingestion pipeline with scrape fallback allowlist
 
@@ -23,6 +24,8 @@ Mobile-first PWA prototype implementing the HealthLens plan:
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/config/rules.json` strictest-wins multi-framework rule registry
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/tests/riskEngine.test.mjs` scenario tests for core risk logic
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/tests/globalGuardrail.test.mjs` strictest global framework verdict tests
+- `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/tests/avoidEngine.test.mjs` avoid marker engine tests
+- `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/tests/avoidTab.test.mjs` avoid tab integration checks
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/tests/catalogPipeline.test.mjs` normalization and merge policy tests
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/tests/ingestCatalog.test.mjs` ingestion integration tests
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/tests/regulatoryIngestion.test.mjs` regulator feed ingestion tests
@@ -30,6 +33,7 @@ Mobile-first PWA prototype implementing the HealthLens plan:
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalog/products.json` shared catalog store
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalog/barcode_queue.json` ingestion queue file
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalog/regulatory_actions.json` regulator-confirmed and under-review action feed
+- `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalog/avoid_markers.json` avoid marker source list (confirmed + under-review)
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalog/regulatory_ingestion_log.jsonl` regulatory ingestion event log
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalog/source_allowlist.json` scraping allowlist policy
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalog/ingestion_log.jsonl` ingestion event log
@@ -62,6 +66,8 @@ node ./tests/ingestCatalog.test.mjs
 node ./tests/nutritionTable.test.mjs
 node ./tests/globalGuardrail.test.mjs
 node ./tests/regulatoryIngestion.test.mjs
+node ./tests/avoidEngine.test.mjs
+node ./tests/avoidTab.test.mjs
 ```
 
 ## Catalog ingestion
@@ -131,6 +137,21 @@ HealthLens now computes:
 Unknowns are explicit:
 - Missing added nutrient values (`added_sugars_g`, `added_salt_mg`, `added_fat_g`) stay `Unknown`.
 - Added values are never inferred from total sugar/salt/fat.
+
+## Avoid tab (evidence-gated)
+
+The app now includes `Home | Scan | Avoid | Watchdog | Coach | Saved` in a horizontal-scroll liquid-glass bottom nav.
+
+Avoid behavior:
+- `Avoid`: at least one regulator-confirmed, high-confidence avoid marker match.
+- `Caution`: only under-review or mixed non-confirmed avoid marker matches.
+- `None`: no avoid marker matched current pack text.
+- `Unknown`: pack/regulatory context missing for avoid check.
+
+Policy safeguards:
+- Marker list is ingredient-first and evidence-tiered.
+- Under-review leads stay explicitly labeled.
+- No brand-level “banned” wording without authority-backed action records.
 
 ## Install on Android (Netlify PWA)
 

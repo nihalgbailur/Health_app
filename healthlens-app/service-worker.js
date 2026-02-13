@@ -1,4 +1,4 @@
-const CACHE_NAME = 'healthlens-v10';
+const CACHE_NAME = 'healthlens-v11';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -13,6 +13,7 @@ const CORE_ASSETS = [
   './config/rules.json',
   './catalog/products.json',
   './catalog/regulatory_actions.json',
+  './catalog/avoid_markers.json',
   './catalog/source_allowlist.json',
   './manifest.webmanifest',
   './icon.svg',
@@ -41,6 +42,7 @@ self.addEventListener('fetch', (event) => {
   const isCatalogAsset =
     requestUrl.pathname.endsWith('/catalog/products.json') ||
     requestUrl.pathname.endsWith('/catalog/regulatory_actions.json') ||
+    requestUrl.pathname.endsWith('/catalog/avoid_markers.json') ||
     requestUrl.pathname.endsWith('/catalog/source_allowlist.json');
 
   if (isCatalogAsset) {

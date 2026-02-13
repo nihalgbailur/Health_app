@@ -1,7 +1,9 @@
+import { AVOID_MARKERS } from './data.mjs';
 import { finalizeProductRecord, mergeProductRecords } from './catalogPipeline.mjs';
 
 const DEFAULT_CATALOG_URL = './catalog/products.json';
 const DEFAULT_REGULATORY_ACTIONS_URL = './catalog/regulatory_actions.json';
+const DEFAULT_AVOID_MARKERS_URL = './catalog/avoid_markers.json';
 const INGEST_QUEUE_STORAGE_KEY = 'healthlens.ingestQueue';
 
 function toSeedRecord(product) {
@@ -108,6 +110,62 @@ export async function loadRegulatoryActions({
       .filter((item) => item.id && item.product_name);
   } catch {
     return [];
+  }
+}
+
+function normalizeAvoidMarker(item) {
+  const verificationState = String(item?.verification_state || '').trim();
+  const confidence = String(item?.confidence || '').toLowerCase();
+  return {
+    id: String(item?.id || '').trim(),
+    display_name: String(item?.display_name || '').trim(),
+    aliases: Array.isArray(item?.aliases) ? item.aliases.map((value) => String(value || '').trim()).filter(Boolean) : [],
+    category: ['additive', 'contaminant', 'oil', 'processing', 'microbial', 'other'].includes(String(item?.category || ''))
+      ? String(item.category)
+      : 'other',
+    pack_match_mode: ['ingredient', 'claim', 'both'].includes(String(item?.pack_match_mode || ''))
+      ? String(item.pack_match_mode)
+      : 'both',
+    regex: String(item?.regex || '').trim(),
+    action_text: String(item?.action_text || 'If listed on pack, treat as caution and compare alternatives.').trim(),
+    verification_state:
+      verificationState === 'Regulator Confirmed' || verificationState === 'Independent Evidence' || verificationState === 'Under Review'
+        ? verificationState
+        : 'Under Review',
+    confidence: confidence === 'high' || confidence === 'medium' || confidence === 'low' ? confidence : 'low',
+    jurisdictions: Array.isArray(item?.jurisdictions)
+      ? item.jurisdictions.map((value) => String(value || '').trim()).filter(Boolean)
+      : ['Global'],
+    evidence_rule_ids: Array.isArray(item?.evidence_rule_ids)
+      ? item.evidence_rule_ids.map((value) => String(value || '').trim()).filter(Boolean)
+      : [],
+    source_urls: Array.isArray(item?.source_urls)
+      ? item.source_urls.map((value) => String(value || '').trim()).filter(Boolean)
+      : [],
+    last_verified_at: String(item?.last_verified_at || '').trim() || new Date().toISOString().slice(0, 10),
+    is_provisional: Boolean(item?.is_provisional)
+  };
+}
+
+export async function loadAvoidMarkers({
+  markersUrl = DEFAULT_AVOID_MARKERS_URL
+} = {}) {
+  try {
+    const response = await fetch(markersUrl, { cache: 'no-store' });
+    if (!response.ok) {
+      return AVOID_MARKERS.map((item) => normalizeAvoidMarker(item)).filter((item) => item.id && item.display_name);
+    }
+
+    const payload = await response.json();
+    if (!Array.isArray(payload)) {
+      return AVOID_MARKERS.map((item) => normalizeAvoidMarker(item)).filter((item) => item.id && item.display_name);
+    }
+
+    return payload
+      .map((item) => normalizeAvoidMarker(item))
+      .filter((item) => item.id && item.display_name);
+  } catch {
+    return AVOID_MARKERS.map((item) => normalizeAvoidMarker(item)).filter((item) => item.id && item.display_name);
   }
 }
 

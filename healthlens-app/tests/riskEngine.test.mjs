@@ -26,6 +26,10 @@ function run() {
   assert.equal(turmeric.severity, 'High');
   assert(turmeric.risk_signals.some((s) => s.rule_triggered === 'lead_chromate'));
   assert.equal(validateEvidenceCompleteness(turmeric), true);
+  assert.equal(typeof turmeric.avoid_verdict, 'string');
+  assert.equal(Array.isArray(turmeric.avoid_matches), true);
+  assert.equal(Array.isArray(turmeric.avoid_notes), true);
+  assert.equal(turmeric.avoid_verdict, 'Avoid');
 
   // 2. Unknown manual check with no trigger should produce Unknown state.
   const manualUnknown = evaluateProduct(null, {
@@ -33,6 +37,7 @@ function run() {
   });
   assert.equal(manualUnknown.severity, 'Unknown');
   assert.equal(manualUnknown.risk_signals.length, 0);
+  assert.equal(manualUnknown.avoid_verdict, 'None');
 
   // 2b. Catalog product without ingredients/nutrition should stay Unknown, not Low.
   const sparseLiveProduct = evaluateProduct({
@@ -47,6 +52,7 @@ function run() {
   });
   assert.equal(sparseLiveProduct.severity, 'Unknown');
   assert.match(sparseLiveProduct.summary, /limited product data/i);
+  assert.equal(sparseLiveProduct.avoid_verdict, 'Unknown');
 
   // 3. Compare two products and ensure lower-risk recommendation is selected.
   const chips = byId('p3');
@@ -66,6 +72,13 @@ function run() {
   const reviewSignal = underReview.risk_signals.find((s) => s.rule_triggered === 'synthetic_sweeteners');
   assert(reviewSignal, 'Expected synthetic_sweeteners signal');
   assert(reviewSignal.evidence.some((card) => card.source_type === 'Under Review'));
+
+  // 5b. Under-review avoid markers should produce Caution, not Avoid.
+  const avoidReviewOnly = evaluateProduct(null, {
+    ingredients: parseIngredientsInput('milk solids, sugar, tartrazine')
+  });
+  assert.equal(avoidReviewOnly.avoid_verdict, 'Caution');
+  assert(avoidReviewOnly.avoid_matches.some((item) => item.verification_state === 'Under Review'));
 
   // 6. Red nutrition threshold should trigger high-sugar alert.
   const cereal = evaluateProduct(byId('p7'));

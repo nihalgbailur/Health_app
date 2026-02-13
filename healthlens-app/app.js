@@ -12,6 +12,7 @@ import {
   clearQueuedBarcodes,
   enqueueBarcodeForIngestion,
   exportQueuedBarcodes,
+  loadAvoidMarkers,
   loadCatalogWithSeedFallback,
   loadRegulatoryActions,
   readQueuedBarcodes
@@ -39,6 +40,7 @@ const state = {
   activeTab: 'home',
   catalog: [...PRODUCTS],
   regulatoryActions: [],
+  avoidMarkers: [],
   savedIds: new Set(readSavedIds()),
   recentChecks: readRecentChecks(),
   coachIndex: readCoachIndex(),
@@ -70,6 +72,11 @@ const elements = {
   recentList: document.querySelector('#recentList'),
   clearRecentBtn: document.querySelector('#clearRecentBtn'),
   watchdogList: document.querySelector('#watchdogList'),
+  avoidSearch: document.querySelector('#avoidSearch'),
+  avoidCategoryChips: document.querySelector('#avoidCategoryChips'),
+  avoidConfirmedList: document.querySelector('#avoidConfirmedList'),
+  avoidReviewList: document.querySelector('#avoidReviewList'),
+  avoidReviewPanel: document.querySelector('#avoidReviewPanel'),
   coachTip: document.querySelector('#coachTip'),
   nextTipBtn: document.querySelector('#nextTipBtn'),
   savedList: document.querySelector('#savedList'),
@@ -94,16 +101,19 @@ const elements = {
 void init();
 
 async function init() {
-  const [catalog, regulatoryActions] = await Promise.all([
+  const [catalog, regulatoryActions, avoidMarkers] = await Promise.all([
     loadCatalogWithSeedFallback(PRODUCTS),
-    loadRegulatoryActions()
+    loadRegulatoryActions(),
+    loadAvoidMarkers()
   ]);
   state.catalog = catalog;
   state.regulatoryActions = regulatoryActions;
+  state.avoidMarkers = avoidMarkers;
 
   bindTabNavigation();
   bindScannerForms();
   bindHomeActions();
+  bindAvoidTab();
   bindCoach();
   bindSavedAndCompare();
   bindCameraScanner();
@@ -113,6 +123,7 @@ async function init() {
   renderHomeAlerts();
   renderRecentChecks();
   renderWatchdogFeed();
+  renderAvoidTab();
   renderCoachTip();
   renderSaved();
   renderCompareSelectors();
@@ -173,7 +184,12 @@ function bindScannerForms() {
       return;
     }
 
-    const result = evaluateProduct(null, { ingredients, regulatory_actions: state.regulatoryActions });
+    const result = evaluateProduct(null, {
+      ingredients,
+      manual_input: elements.manualIngredients.value,
+      regulatory_actions: state.regulatoryActions,
+      avoid_markers: state.avoidMarkers
+    });
     completeScan({
       product: null,
       result,
@@ -252,6 +268,28 @@ function bindHomeActions() {
   }
 }
 
+function bindAvoidTab() {
+  if (elements.avoidSearch) {
+    elements.avoidSearch.addEventListener('input', () => {
+      renderAvoidTab();
+    });
+  }
+
+  if (elements.avoidCategoryChips) {
+    elements.avoidCategoryChips.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (!target.matches('[data-avoid-category]')) return;
+
+      const category = String(target.dataset.avoidCategory || 'all');
+      if (elements.avoidSearch) {
+        elements.avoidSearch.dataset.categoryFilter = category;
+      }
+      renderAvoidTab();
+    });
+  }
+}
+
 function bindCoach() {
   elements.nextTipBtn.addEventListener('click', () => {
     state.coachIndex = (state.coachIndex + 1) % COACH_TIPS.length;
@@ -282,7 +320,10 @@ function bindSavedAndCompare() {
     const right = getProductById(rightId);
 
     if (!left || !right) return;
-    const comparison = compareProducts(left, right, { regulatory_actions: state.regulatoryActions });
+    const comparison = compareProducts(left, right, {
+      regulatory_actions: state.regulatoryActions,
+      avoid_markers: state.avoidMarkers
+    });
 
     elements.compareResult.innerHTML = renderComparisonHTML(left, right, comparison);
   });
@@ -545,7 +586,10 @@ async function runBarcodeScan(barcode) {
         }
       }
 
-      const result = evaluateProduct(selectedProduct, { regulatory_actions: state.regulatoryActions });
+      const result = evaluateProduct(selectedProduct, {
+        regulatory_actions: state.regulatoryActions,
+        avoid_markers: state.avoidMarkers
+      });
       completeScan({
         product: selectedProduct,
         result,
@@ -565,7 +609,10 @@ async function runBarcodeScan(barcode) {
         queueBarcodeForIngestion(barcode, 'api_sparse_needs_scrape');
       }
 
-      const result = evaluateProduct(liveProduct, { regulatory_actions: state.regulatoryActions });
+      const result = evaluateProduct(liveProduct, {
+        regulatory_actions: state.regulatoryActions,
+        avoid_markers: state.avoidMarkers
+      });
       completeScan({
         product: liveProduct,
         result,
@@ -577,7 +624,11 @@ async function runBarcodeScan(barcode) {
     }
 
     queueBarcodeForIngestion(barcode, 'api_miss_needs_scrape');
-    const result = evaluateProduct(null, { ingredients: [], regulatory_actions: state.regulatoryActions });
+    const result = evaluateProduct(null, {
+      ingredients: [],
+      regulatory_actions: state.regulatoryActions,
+      avoid_markers: state.avoidMarkers
+    });
     completeScan({
       product: null,
       result,
@@ -727,8 +778,14 @@ function renderScanResult() {
   const evidencePolicyLabel = getEvidencePolicyLabel(result);
   const confidenceSummary = renderConfidenceSummary(result);
   const regulatoryActions = renderRegulatoryActions(result.regulatory_action_matches || []);
+  const avoidBanner = renderAvoidBanner(result);
 
-  const swaps = product ? recommendSwaps(state.catalog, product, result, { regulatory_actions: state.regulatoryActions }) : [];
+  const swaps = product
+    ? recommendSwaps(state.catalog, product, result, {
+        regulatory_actions: state.regulatoryActions,
+        avoid_markers: state.avoidMarkers
+      })
+    : [];
   const swapHTML = swaps.length
     ? `<ul class="swap-list">${swaps
         .map((swap) => {
@@ -789,6 +846,11 @@ function renderScanResult() {
       ${product ? `<button type="button" class="secondary-btn" data-save-product="${product.id}">${state.savedIds.has(product.id) ? 'Remove from saved' : 'Save product'}</button>` : ''}
 
       <div>
+        <h3>Avoid check</h3>
+        ${avoidBanner}
+      </div>
+
+      <div>
         <h3>Risk signals</h3>
         ${renderRiskSignals(result.risk_signals)}
       </div>
@@ -828,6 +890,9 @@ function renderScanResult() {
 
       <p class="meta">
         This result aggregates international health frameworks because enforcement and labeling practices vary by market.
+      </p>
+      <p class="meta">
+        This list aggregates international evidence and regulator actions; entries without authority confirmation are labeled Under Review.
       </p>
       <p class="meta">
         Informational only, not medical or legal advice. Risk signals are evidence-driven and may include under-review findings when regulator confirmation is pending.
@@ -939,6 +1004,124 @@ function renderRegulatoryActions(actions) {
     .join('')}</ul>`;
 }
 
+function renderAvoidBanner(result) {
+  const verdict = String(result?.avoid_verdict || 'Unknown');
+  const verdictClass =
+    verdict === 'Avoid'
+      ? 'high'
+      : verdict === 'Caution'
+        ? 'moderate'
+        : verdict === 'None'
+          ? 'low'
+          : 'unknown';
+  const matches = Array.isArray(result?.avoid_matches) ? result.avoid_matches : [];
+  const notes = Array.isArray(result?.avoid_notes) ? result.avoid_notes : [];
+
+  if (!matches.length) {
+    return `<div class="stack-item avoid-banner ${verdictClass}">
+      <div class="badge-row">
+        <span class="badge ${verdictClass}">${escapeHTML(verdict)}</span>
+        <span class="meta">Avoid-track status</span>
+      </div>
+      <p class="meta">${escapeHTML(notes[0] || 'No avoid marker matched this scan.')}</p>
+    </div>`;
+  }
+
+  const markerList = matches
+    .slice(0, 6)
+    .map((match) => `<li>${escapeHTML(match.display_name)} (${escapeHTML(match.matched_text)})</li>`)
+    .join('');
+
+  return `<div class="stack-item avoid-banner ${verdictClass}">
+    <div class="badge-row">
+      <span class="badge ${verdictClass}">${escapeHTML(verdict)}</span>
+      <span class="meta">Warn + explain mode</span>
+    </div>
+    <p>${escapeHTML(verdict === 'Avoid' ? 'Confirmed avoid marker detected. Prefer a different product.' : 'Caution marker detected. Verify before regular use.')}</p>
+    <ul class="meta-list">${markerList}</ul>
+    ${
+      notes.length
+        ? `<ul class="meta-list">${notes.map((note) => `<li>${escapeHTML(note)}</li>`).join('')}</ul>`
+        : ''
+    }
+  </div>`;
+}
+
+function markerMatchesQuery(marker, searchTerm) {
+  if (!searchTerm) return true;
+  const haystack = `${marker.display_name} ${marker.aliases.join(' ')} ${marker.category}`.toLowerCase();
+  return haystack.includes(searchTerm);
+}
+
+function toCategoryLabel(category) {
+  if (!category) return 'Other';
+  const words = String(category).split('_');
+  return words.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+}
+
+function renderAvoidMarkerCard(marker) {
+  const sourceColor = SOURCE_BADGE_COLORS[marker.verification_state] || '#334';
+  const confidenceClass = marker.confidence === 'high' ? 'low' : marker.confidence === 'medium' ? 'moderate' : 'unknown';
+  const links = marker.source_urls.length
+    ? marker.source_urls
+        .map((url) => `<a href="${escapeAttr(url)}" target="_blank" rel="noreferrer">Source</a>`)
+        .join(' • ')
+    : '<span class="meta">No source links</span>';
+
+  return `<li class="stack-item avoid-marker">
+    <div class="badge-row">
+      <span class="badge source" style="background:${sourceColor}">${escapeHTML(marker.verification_state)}</span>
+      <span class="badge ${confidenceClass}">${escapeHTML(marker.confidence.toUpperCase())}</span>
+      <span class="meta">${escapeHTML(toCategoryLabel(marker.category))}</span>
+    </div>
+    <p><strong>${escapeHTML(marker.display_name)}</strong></p>
+    <p class="meta">Aliases: ${escapeHTML(marker.aliases.join(', ') || 'Not specified')}</p>
+    <p>${escapeHTML(marker.action_text)}</p>
+    <p class="meta">Jurisdictions: ${escapeHTML(marker.jurisdictions.join(', ') || 'Global')}</p>
+    <p class="meta">Verified: ${escapeHTML(marker.last_verified_at)}${marker.is_provisional ? ' • Provisional' : ''}</p>
+    <p class="meta">${links}</p>
+  </li>`;
+}
+
+function renderAvoidTab() {
+  if (!elements.avoidConfirmedList || !elements.avoidReviewList) return;
+  const searchTerm = String(elements.avoidSearch?.value || '')
+    .toLowerCase()
+    .trim();
+  const selectedCategory = String(elements.avoidSearch?.dataset.categoryFilter || 'all').toLowerCase();
+
+  const categories = ['all', ...new Set((state.avoidMarkers || []).map((marker) => String(marker.category || 'other').toLowerCase()))];
+  if (elements.avoidCategoryChips) {
+    elements.avoidCategoryChips.innerHTML = categories
+      .map((category) => {
+        const active = category === selectedCategory;
+        return `<button type="button" class="${active ? 'secondary-btn' : 'ghost-btn'} avoid-chip" data-avoid-category="${escapeAttr(category)}">${escapeHTML(
+          toCategoryLabel(category)
+        )}</button>`;
+      })
+      .join('');
+  }
+
+  const filtered = (state.avoidMarkers || [])
+    .filter((marker) => (selectedCategory === 'all' ? true : String(marker.category || '').toLowerCase() === selectedCategory))
+    .filter((marker) => markerMatchesQuery(marker, searchTerm));
+
+  const confirmed = filtered.filter((marker) => marker.verification_state === 'Regulator Confirmed');
+  const review = filtered.filter((marker) => marker.verification_state !== 'Regulator Confirmed');
+
+  elements.avoidConfirmedList.innerHTML = confirmed.length
+    ? confirmed.map((marker) => renderAvoidMarkerCard(marker)).join('')
+    : '<li class="stack-item"><p class="meta">No confirmed marker in this filter.</p></li>';
+
+  elements.avoidReviewList.innerHTML = review.length
+    ? review.map((marker) => renderAvoidMarkerCard(marker)).join('')
+    : '<li class="stack-item"><p class="meta">No under-review marker in this filter.</p></li>';
+
+  if (elements.avoidReviewPanel) {
+    elements.avoidReviewPanel.open = Boolean(review.length);
+  }
+}
+
 function renderEvidence(signals) {
   const evidence = signals
     .flatMap((signal) => signal.evidence || [])
@@ -1010,7 +1193,10 @@ function renderSaved() {
 
   elements.savedList.innerHTML = savedProducts
     .map((product) => {
-      const result = evaluateProduct(product, { regulatory_actions: state.regulatoryActions });
+      const result = evaluateProduct(product, {
+        regulatory_actions: state.regulatoryActions,
+        avoid_markers: state.avoidMarkers
+      });
       return `<li class="stack-item">
         <div class="section-head">
           <p><strong>${escapeHTML(product.name)}</strong></p>
