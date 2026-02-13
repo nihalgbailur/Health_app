@@ -3,7 +3,7 @@
  */
 
 /** @typedef {'Low' | 'Moderate' | 'High' | 'Unknown'} Severity */
-/** @typedef {'Regulator Confirmed' | 'Independent Testing' | 'Under Review'} SourceType */
+/** @typedef {'Regulator Confirmed' | 'Independent Evidence' | 'Independent Testing' | 'Under Review'} SourceType */
 
 /**
  * @typedef {Object} ProductProfile
@@ -14,6 +14,9 @@
  * @property {string} category
  * @property {string[]} region_availability
  * @property {string[]} ingredients_raw
+ * @property {'solid' | 'liquid' | 'unknown'} product_form
+ * @property {number | undefined} [serving_size_g]
+ * @property {number | undefined} [serving_size_ml]
  * @property {{
  *   energy_kcal: number,
  *   total_fat_g: number,
@@ -22,7 +25,10 @@
  *   salt_g: number,
  *   sodium_mg: number,
  *   fiber_g: number,
- *   protein_g: number
+ *   protein_g: number,
+ *   added_sugars_g?: number,
+ *   added_salt_mg?: number,
+ *   added_fat_g?: number
  * }} nutrition_per_100g
  * @property {'seed' | 'api' | 'scrape' | 'merged'} source_origin
  * @property {string[]} source_urls
@@ -41,6 +47,27 @@
  * @property {string} publication_date
  * @property {'India' | 'EU' | 'US' | 'Global'} jurisdiction
  * @property {'High' | 'Medium' | 'Low'} strength_level
+ * @property {'Regulator Confirmed' | 'Independent Evidence' | 'Under Review'} verification_state
+ * @property {string} last_verified_at
+ * @property {string} source_authority
+ */
+
+/**
+ * @typedef {Object} RegulatoryActionItem
+ * @property {string} id
+ * @property {string} jurisdiction
+ * @property {string} authority
+ * @property {'ban' | 'recall' | 'import_refusal' | 'alert' | 'update'} action_type
+ * @property {string | undefined} [barcode]
+ * @property {string} product_name
+ * @property {string | undefined} [brand]
+ * @property {string | undefined} [manufacturer]
+ * @property {string} reason_category
+ * @property {string} hazard
+ * @property {string} action_date
+ * @property {'confirmed' | 'under_review'} status
+ * @property {string[]} source_urls
+ * @property {'Regulator Confirmed' | 'Independent Evidence' | 'Under Review'} confidence
  */
 
 /**
@@ -68,7 +95,7 @@ export const EVIDENCE_BY_RULE = {
     },
     {
       id: 'e-led-2',
-      source_type: 'Independent Testing',
+      source_type: 'Independent Evidence',
       title: 'Stanford-led study on lead adulteration in South Asian turmeric',
       source_url: 'https://pubs.acs.org',
       publication_date: '2024-09-01',
@@ -88,7 +115,7 @@ export const EVIDENCE_BY_RULE = {
     },
     {
       id: 'e-dye-2',
-      source_type: 'Independent Testing',
+      source_type: 'Independent Evidence',
       title: 'Large sample studies reporting banned dyes in market foods',
       source_url: 'https://www.cseindia.org',
       publication_date: '2024-12-18',
@@ -143,12 +170,34 @@ export const EVIDENCE_BY_RULE = {
   ultra_processed_markers: [
     {
       id: 'e-upf-1',
-      source_type: 'Independent Testing',
+      source_type: 'Independent Evidence',
       title: 'Umbrella reviews linking higher ultra-processed intake to disease risk',
       source_url: 'https://www.bmj.com',
       publication_date: '2024-02-28',
       jurisdiction: 'Global',
       strength_level: 'Medium'
+    }
+  ],
+  trans_fat_pho: [
+    {
+      id: 'e-transfat-1',
+      source_type: 'Regulator Confirmed',
+      title: 'WHO REPLACE and PHO elimination guidance',
+      source_url: 'https://www.who.int/teams/nutrition-and-food-safety/replace-trans-fat',
+      publication_date: '2025-12-01',
+      jurisdiction: 'Global',
+      strength_level: 'High'
+    }
+  ],
+  uk_portion_override: [
+    {
+      id: 'e-portion-1',
+      source_type: 'Regulator Confirmed',
+      title: 'UK front-of-pack guidance on red-per-portion overrides',
+      source_url: 'https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf',
+      publication_date: '2025-06-01',
+      jurisdiction: 'Global',
+      strength_level: 'High'
     }
   ],
   high_sugar: [
@@ -185,6 +234,48 @@ export const EVIDENCE_BY_RULE = {
     }
   ]
 };
+
+function deriveSourceAuthority(card) {
+  const url = String(card?.source_url || '').toLowerCase();
+  if (!url) return 'Unknown';
+  if (url.includes('fda.gov')) return 'U.S. FDA';
+  if (url.includes('who.int')) return 'WHO';
+  if (url.includes('fssai.gov.in')) return 'FSSAI';
+  if (url.includes('food.gov.uk')) return 'UK FSA';
+  if (url.includes('canada.ca')) return 'Health Canada';
+  if (url.includes('europa.eu')) return 'European Commission';
+  if (url.includes('bmj.com')) return 'BMJ';
+  if (url.includes('pubs.acs.org')) return 'ACS Publications';
+  if (url.includes('cseindia.org')) return 'CSE India';
+  if (url.includes('iarc.who.int')) return 'IARC';
+  return 'Independent source';
+}
+
+function deriveVerificationState(sourceType) {
+  if (sourceType === 'Regulator Confirmed') return 'Regulator Confirmed';
+  if (sourceType === 'Under Review') return 'Under Review';
+  return 'Independent Evidence';
+}
+
+for (const cards of Object.values(EVIDENCE_BY_RULE)) {
+  for (const card of cards) {
+    card.verification_state = card.verification_state || deriveVerificationState(card.source_type);
+    card.last_verified_at = card.last_verified_at || card.publication_date;
+    card.source_authority = card.source_authority || deriveSourceAuthority(card);
+  }
+}
+
+function inferSeedProductForm(product) {
+  const explicit = String(product?.product_form || '').toLowerCase().trim();
+  if (explicit === 'solid' || explicit === 'liquid') return explicit;
+
+  const hint = `${product?.category || ''} ${product?.name || ''}`.toLowerCase();
+  if (/(drink|beverage|juice|water|soda|tea|coffee|milk|shake|smoothie|syrup)/i.test(hint)) {
+    return 'liquid';
+  }
+
+  return 'solid';
+}
 
 /** @type {ProductProfile[]} */
 export const PRODUCTS = [
@@ -368,6 +459,7 @@ export const PRODUCTS = [
   }
 ].map((product) => ({
   ...product,
+  product_form: inferSeedProductForm(product),
   source_origin: 'seed',
   source_urls: ['seed://data.mjs'],
   fetched_at: '2026-02-13T00:00:00.000Z',
@@ -455,6 +547,7 @@ export const COACH_TIPS = [
 
 export const SOURCE_BADGE_COLORS = {
   'Regulator Confirmed': 'var(--badge-regulator)',
+  'Independent Evidence': 'var(--badge-independent)',
   'Independent Testing': 'var(--badge-independent)',
   'Under Review': 'var(--badge-review)'
 };

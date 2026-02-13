@@ -1,0 +1,864 @@
+{
+  "rules_version": "2.0.0",
+  "effective_date": "2026-02-13",
+  "default_profile_id": "global_guardrail_v1",
+  "runtime_flags": {
+    "GLOBAL_GUARDRAIL_V1": true
+  },
+  "shared": {
+    "conversions": {
+      "salt_from_sodium_factor": 2.5,
+      "sodium_from_salt_factor": 0.4
+    },
+    "unknown_policy": {
+      "added_nutrients": "unknown_if_missing"
+    },
+    "trust_policy": {
+      "description": "Evidence-grade guardrail: regulator-confirmed actions are separated from under-review claims.",
+      "prohibit_unverified_brand_ban": true
+    }
+  },
+  "global_profile": {
+    "profile_id": "global_guardrail_v1",
+    "strategy": "strictest_wins",
+    "framework_ids": [
+      "uk_traffic_light_v1",
+      "india_icmr_hfss_v1",
+      "canada_fop_reference_v1",
+      "who_population_guidance_v1",
+      "hsr_reference_v1"
+    ]
+  },
+  "profiles": [
+    {
+      "profile_id": "global_guardrail_v1",
+      "framework_name": "Global guardrail",
+      "source_system": "HealthLens synthesis",
+      "jurisdiction": "Global",
+      "status": "active",
+      "guidance_only": false,
+      "priority": 1,
+      "nutrient_rules": [
+        {
+          "rule_id": "nutrient.global.energy_kcal.per_100g",
+          "nutrient_key": "energy_kcal",
+          "label": "Energy (kcal)",
+          "unit": "kcal",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "both",
+          "low_max": 40,
+          "medium_max": 250,
+          "high_min": 250,
+          "daily_target": "~2000 kcal/day",
+          "threshold_text": "Low <= 40 kcal | Medium > 40 to <= 250 kcal | High > 250 kcal",
+          "source_basis": "Cross-system density baseline",
+          "effective_date": "2026-02-13",
+          "confidence_level": "high",
+          "evidence_ids": [
+            "e-nutrition-1"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.who.int/news/item/17-07-2023-who-updates-guidelines-on-fats-and-carbohydrates",
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.global.total_fat_g.per_100g",
+          "nutrient_key": "total_fat_g",
+          "label": "Total fat (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "both",
+          "low_max": 3,
+          "medium_max": 17.5,
+          "high_min": 17.5,
+          "daily_target": "~70 g/day",
+          "threshold_text": "Low <= 3 g | Medium > 3 to <= 17.5 g | High > 17.5 g",
+          "source_basis": "UK traffic-light baseline",
+          "effective_date": "2026-02-13",
+          "confidence_level": "high",
+          "evidence_ids": [
+            "e-nutrition-3"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.who.int/news/item/17-07-2023-who-updates-guidelines-on-fats-and-carbohydrates",
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.global.saturated_fat_g.per_100g",
+          "nutrient_key": "saturated_fat_g",
+          "label": "Saturated fat (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "both",
+          "low_max": 1.5,
+          "medium_max": 5,
+          "high_min": 5,
+          "daily_target": "<20 g/day",
+          "threshold_text": "Low <= 1.5 g | Medium > 1.5 to <= 5 g | High > 5 g",
+          "source_basis": "WHO + UK saturated fat anchors",
+          "effective_date": "2026-02-13",
+          "confidence_level": "high",
+          "evidence_ids": [
+            "e-nutrition-3"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.who.int/news/item/17-07-2023-who-updates-guidelines-on-fats-and-carbohydrates",
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.global.total_sugars_g.per_100g",
+          "nutrient_key": "total_sugars_g",
+          "label": "Total sugars (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "both",
+          "low_max": 5,
+          "medium_max": 22.5,
+          "high_min": 22.5,
+          "daily_target": "Added sugar <25-50 g/day",
+          "threshold_text": "Low <= 5 g | Medium > 5 to <= 22.5 g | High > 22.5 g",
+          "source_basis": "WHO + UK sugar cutoffs",
+          "effective_date": "2026-02-13",
+          "confidence_level": "high",
+          "evidence_ids": [
+            "e-nutrition-1"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.who.int/news/item/17-07-2023-who-updates-guidelines-on-fats-and-carbohydrates",
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.global.salt_g.per_100g",
+          "nutrient_key": "salt_g",
+          "label": "Salt (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "both",
+          "low_max": 0.3,
+          "medium_max": 1.5,
+          "high_min": 1.5,
+          "daily_target": "<5 g/day",
+          "threshold_text": "Low <= 0.3 g | Medium > 0.3 to <= 1.5 g | High > 1.5 g",
+          "source_basis": "WHO sodium/salt guidance",
+          "effective_date": "2026-02-13",
+          "confidence_level": "high",
+          "evidence_ids": [
+            "e-nutrition-2"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.who.int/news/item/17-07-2023-who-updates-guidelines-on-fats-and-carbohydrates",
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.global.sodium_mg.per_100g",
+          "nutrient_key": "sodium_mg",
+          "label": "Sodium (mg)",
+          "unit": "mg",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "both",
+          "low_max": 120,
+          "medium_max": 600,
+          "high_min": 600,
+          "daily_target": "<2000 mg/day",
+          "threshold_text": "Low <= 120 mg | Medium > 120 to <= 600 mg | High > 600 mg",
+          "source_basis": "Global sodium benchmark bands",
+          "effective_date": "2026-02-13",
+          "confidence_level": "medium",
+          "evidence_ids": [
+            "e-nutrition-2"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.who.int/news/item/17-07-2023-who-updates-guidelines-on-fats-and-carbohydrates",
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.global.fiber_g.per_100g",
+          "nutrient_key": "fiber_g",
+          "label": "Fiber (g)",
+          "unit": "g",
+          "band_type": "beneficial",
+          "basis": "per_100g",
+          "applies_to": "both",
+          "low_max": 1,
+          "medium_max": 3,
+          "high_min": 3,
+          "daily_target": ">=25-30 g/day",
+          "threshold_text": "Low < 1 g | Medium >= 1 to < 3 g | High >= 3 g (>= 6 g very high)",
+          "source_basis": "WHO fiber intake + EU claim anchors",
+          "effective_date": "2026-02-13",
+          "confidence_level": "medium",
+          "evidence_ids": [
+            "e-nutrition-1"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.who.int/news/item/17-07-2023-who-updates-guidelines-on-fats-and-carbohydrates",
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.global.protein_g.percent_energy",
+          "nutrient_key": "protein_g",
+          "label": "Protein (g)",
+          "unit": "g",
+          "band_type": "beneficial",
+          "basis": "percent_energy",
+          "applies_to": "both",
+          "calculation": "percent_energy_from_protein",
+          "low_max": 12,
+          "medium_max": 20,
+          "high_min": 20,
+          "daily_target": "10-35% daily energy",
+          "threshold_text": "Low < 12% energy | Medium >= 12% to < 20% | High >= 20%",
+          "source_basis": "WHO + EU protein claim thresholds",
+          "effective_date": "2026-02-13",
+          "confidence_level": "medium",
+          "evidence_ids": [
+            "e-nutrition-1"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.who.int/news/item/17-07-2023-who-updates-guidelines-on-fats-and-carbohydrates",
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.global.added_sugars_g.per_100g",
+          "nutrient_key": "added_sugars_g",
+          "label": "Added sugars (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "both",
+          "low_max": 1,
+          "medium_max": 3,
+          "high_min": 3,
+          "daily_target": "Keep added sugars minimal",
+          "threshold_text": "Low <= 1 g | Medium > 1 to <= 3 g | High > 3 g",
+          "source_basis": "ICMR-NIN HFSS added sugar trigger",
+          "effective_date": "2026-02-13",
+          "confidence_level": "medium",
+          "unknown_reason": "missing_added_nutrient",
+          "unknown_when_missing": true,
+          "evidence_ids": [
+            "e-nutrition-1"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.who.int/news/item/17-07-2023-who-updates-guidelines-on-fats-and-carbohydrates",
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.global.added_salt_mg.per_100g",
+          "nutrient_key": "added_salt_mg",
+          "label": "Added salt (mg)",
+          "unit": "mg",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "both",
+          "low_max": 175,
+          "medium_max": 625,
+          "high_min": 625,
+          "daily_target": "Keep added salt minimal",
+          "threshold_text": "Low <= 175 mg | Medium > 175 to <= 625 mg | High > 625 mg",
+          "source_basis": "ICMR-NIN HFSS added salt trigger",
+          "effective_date": "2026-02-13",
+          "confidence_level": "medium",
+          "unknown_reason": "missing_added_nutrient",
+          "unknown_when_missing": true,
+          "evidence_ids": [
+            "e-nutrition-2"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.who.int/news/item/17-07-2023-who-updates-guidelines-on-fats-and-carbohydrates",
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.global.added_fat_g.per_100g",
+          "nutrient_key": "added_fat_g",
+          "label": "Added fat (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "both",
+          "low_max": 0.75,
+          "medium_max": 1.5,
+          "high_min": 1.5,
+          "daily_target": "Keep added fat low",
+          "threshold_text": "Low <= 0.75 g | Medium > 0.75 to <= 1.5 g | High > 1.5 g",
+          "source_basis": "ICMR-NIN liquid added fat trigger",
+          "effective_date": "2026-02-13",
+          "confidence_level": "low",
+          "unknown_reason": "missing_added_nutrient",
+          "unknown_when_missing": true,
+          "evidence_ids": [
+            "e-nutrition-3"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.who.int/news/item/17-07-2023-who-updates-guidelines-on-fats-and-carbohydrates",
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        }
+      ],
+      "risk_signal_rules": [
+        {
+          "signal_id": "signal-high-sugar",
+          "rule_triggered": "high_sugar",
+          "nutrient_key": "total_sugars_g",
+          "trigger_levels": [
+            "medium",
+            "high"
+          ],
+          "severity_map": {
+            "medium": "Moderate",
+            "high": "High"
+          },
+          "ingredient_or_issue": "Sugar density",
+          "confidence": 0.86,
+          "explanation_map": {
+            "high": "Sugar is in the high-risk zone per traffic-light thresholds.",
+            "medium": "Sugar is in the caution zone; compare lower-sugar alternatives."
+          },
+          "evidence_rule_id": "high_sugar"
+        },
+        {
+          "signal_id": "signal-high-salt",
+          "rule_triggered": "high_salt",
+          "nutrient_key": "salt_g",
+          "trigger_levels": [
+            "medium",
+            "high"
+          ],
+          "severity_map": {
+            "medium": "Moderate",
+            "high": "High"
+          },
+          "ingredient_or_issue": "Salt density",
+          "confidence": 0.9,
+          "explanation_map": {
+            "high": "Salt is in the high-risk zone and can quickly raise sodium load.",
+            "medium": "Salt is moderate; frequent use can still push daily sodium limits."
+          },
+          "evidence_rule_id": "high_salt"
+        },
+        {
+          "signal_id": "signal-high-satfat",
+          "rule_triggered": "high_saturated_fat",
+          "nutrient_key": "saturated_fat_g",
+          "trigger_levels": [
+            "medium",
+            "high"
+          ],
+          "severity_map": {
+            "medium": "Moderate",
+            "high": "High"
+          },
+          "ingredient_or_issue": "Saturated fat density",
+          "confidence": 0.82,
+          "explanation_map": {
+            "high": "Saturated fat is high for a per-100g serving baseline.",
+            "medium": "Saturated fat is moderate; frequent intake can add up quickly."
+          },
+          "evidence_rule_id": "high_saturated_fat"
+        }
+      ]
+    },
+    {
+      "profile_id": "uk_traffic_light_v1",
+      "framework_name": "UK traffic-light",
+      "source_system": "UK FOP Traffic Light",
+      "jurisdiction": "UK",
+      "status": "active",
+      "guidance_only": false,
+      "priority": 2,
+      "nutrient_rules": [
+        {
+          "rule_id": "nutrient.uk.total_fat_g.solid",
+          "nutrient_key": "total_fat_g",
+          "label": "Total fat (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "solid",
+          "low_max": 3,
+          "medium_max": 17.5,
+          "high_min": 17.5,
+          "daily_target": "Lower is better",
+          "source_basis": "UK traffic-light foods",
+          "effective_date": "2026-02-13",
+          "confidence_level": "high",
+          "evidence_ids": [
+            "e-nutrition-3"
+          ],
+          "evidence_tier": "regulator",
+          "source_urls": [
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": false
+        },
+        {
+          "rule_id": "nutrient.uk.total_fat_g.liquid",
+          "nutrient_key": "total_fat_g",
+          "label": "Total fat (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100ml",
+          "applies_to": "liquid",
+          "low_max": 1.5,
+          "medium_max": 8.75,
+          "high_min": 8.75,
+          "daily_target": "Lower is better",
+          "source_basis": "UK traffic-light drinks",
+          "effective_date": "2026-02-13",
+          "confidence_level": "high",
+          "evidence_ids": [
+            "e-nutrition-3"
+          ],
+          "evidence_tier": "regulator",
+          "source_urls": [
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": false
+        },
+        {
+          "rule_id": "nutrient.uk.saturated_fat_g.solid",
+          "nutrient_key": "saturated_fat_g",
+          "label": "Saturated fat (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "solid",
+          "low_max": 1.5,
+          "medium_max": 5,
+          "high_min": 5,
+          "daily_target": "Lower is better",
+          "source_basis": "UK traffic-light foods",
+          "effective_date": "2026-02-13",
+          "confidence_level": "high",
+          "evidence_ids": [
+            "e-nutrition-3"
+          ],
+          "evidence_tier": "regulator",
+          "source_urls": [
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": false
+        },
+        {
+          "rule_id": "nutrient.uk.saturated_fat_g.liquid",
+          "nutrient_key": "saturated_fat_g",
+          "label": "Saturated fat (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100ml",
+          "applies_to": "liquid",
+          "low_max": 0.75,
+          "medium_max": 2.5,
+          "high_min": 2.5,
+          "daily_target": "Lower is better",
+          "source_basis": "UK traffic-light drinks",
+          "effective_date": "2026-02-13",
+          "confidence_level": "high",
+          "evidence_ids": [
+            "e-nutrition-3"
+          ],
+          "evidence_tier": "regulator",
+          "source_urls": [
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": false
+        },
+        {
+          "rule_id": "nutrient.uk.total_sugars_g.solid",
+          "nutrient_key": "total_sugars_g",
+          "label": "Total sugars (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "solid",
+          "low_max": 5,
+          "medium_max": 22.5,
+          "high_min": 22.5,
+          "daily_target": "Lower is better",
+          "source_basis": "UK traffic-light foods",
+          "effective_date": "2026-02-13",
+          "confidence_level": "high",
+          "evidence_ids": [
+            "e-nutrition-1"
+          ],
+          "evidence_tier": "regulator",
+          "source_urls": [
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": false
+        },
+        {
+          "rule_id": "nutrient.uk.total_sugars_g.liquid",
+          "nutrient_key": "total_sugars_g",
+          "label": "Total sugars (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100ml",
+          "applies_to": "liquid",
+          "low_max": 2.5,
+          "medium_max": 11.25,
+          "high_min": 11.25,
+          "daily_target": "Lower is better",
+          "source_basis": "UK traffic-light drinks",
+          "effective_date": "2026-02-13",
+          "confidence_level": "high",
+          "evidence_ids": [
+            "e-nutrition-1"
+          ],
+          "evidence_tier": "regulator",
+          "source_urls": [
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": false
+        },
+        {
+          "rule_id": "nutrient.uk.salt_g.solid",
+          "nutrient_key": "salt_g",
+          "label": "Salt (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "solid",
+          "low_max": 0.3,
+          "medium_max": 1.5,
+          "high_min": 1.5,
+          "daily_target": "Lower is better",
+          "source_basis": "UK traffic-light foods",
+          "effective_date": "2026-02-13",
+          "confidence_level": "high",
+          "evidence_ids": [
+            "e-nutrition-2"
+          ],
+          "evidence_tier": "regulator",
+          "source_urls": [
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": false
+        },
+        {
+          "rule_id": "nutrient.uk.salt_g.liquid",
+          "nutrient_key": "salt_g",
+          "label": "Salt (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100ml",
+          "applies_to": "liquid",
+          "low_max": 0.3,
+          "medium_max": 0.75,
+          "high_min": 0.75,
+          "daily_target": "Lower is better",
+          "source_basis": "UK traffic-light drinks",
+          "effective_date": "2026-02-13",
+          "confidence_level": "high",
+          "evidence_ids": [
+            "e-nutrition-2"
+          ],
+          "evidence_tier": "regulator",
+          "source_urls": [
+            "https://www.food.gov.uk/sites/default/files/media/document/fop-guidance_0.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": false
+        }
+      ],
+      "risk_signal_rules": []
+    },
+    {
+      "profile_id": "india_icmr_hfss_v1",
+      "framework_name": "India ICMR HFSS",
+      "source_system": "ICMR-NIN",
+      "jurisdiction": "India",
+      "status": "active",
+      "guidance_only": false,
+      "priority": 3,
+      "nutrient_rules": [
+        {
+          "rule_id": "nutrient.icmr.added_sugars_g.solid",
+          "nutrient_key": "added_sugars_g",
+          "label": "Added sugars (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "solid",
+          "low_max": 1,
+          "medium_max": 3,
+          "high_min": 3,
+          "daily_target": "Minimize added sugars",
+          "source_basis": "ICMR solids added sugar",
+          "effective_date": "2026-02-13",
+          "confidence_level": "medium",
+          "unknown_reason": "missing_added_nutrient",
+          "unknown_when_missing": true,
+          "evidence_ids": [
+            "e-nutrition-1"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.niftem.ac.in/storage/uploads/media/1TnLwY1qlT38LwVhHJlAZIxVXfGqg7ZKhUAJFWRC.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.icmr.added_sugars_g.liquid",
+          "nutrient_key": "added_sugars_g",
+          "label": "Added sugars (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100ml",
+          "applies_to": "liquid",
+          "low_max": 1,
+          "medium_max": 2,
+          "high_min": 2,
+          "daily_target": "Minimize added sugars",
+          "source_basis": "ICMR liquids added sugar",
+          "effective_date": "2026-02-13",
+          "confidence_level": "medium",
+          "unknown_reason": "missing_added_nutrient",
+          "unknown_when_missing": true,
+          "evidence_ids": [
+            "e-nutrition-1"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.niftem.ac.in/storage/uploads/media/1TnLwY1qlT38LwVhHJlAZIxVXfGqg7ZKhUAJFWRC.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.icmr.added_salt_mg.solid",
+          "nutrient_key": "added_salt_mg",
+          "label": "Added salt (mg)",
+          "unit": "mg",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "solid",
+          "low_max": 175,
+          "medium_max": 625,
+          "high_min": 625,
+          "daily_target": "Minimize added salt",
+          "source_basis": "ICMR solids added salt",
+          "effective_date": "2026-02-13",
+          "confidence_level": "medium",
+          "unknown_reason": "missing_added_nutrient",
+          "unknown_when_missing": true,
+          "evidence_ids": [
+            "e-nutrition-2"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.niftem.ac.in/storage/uploads/media/1TnLwY1qlT38LwVhHJlAZIxVXfGqg7ZKhUAJFWRC.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.icmr.added_salt_mg.liquid",
+          "nutrient_key": "added_salt_mg",
+          "label": "Added salt (mg)",
+          "unit": "mg",
+          "band_type": "risk",
+          "basis": "per_100ml",
+          "applies_to": "liquid",
+          "low_max": 80,
+          "medium_max": 175,
+          "high_min": 175,
+          "daily_target": "Minimize added salt",
+          "source_basis": "ICMR liquids added salt",
+          "effective_date": "2026-02-13",
+          "confidence_level": "medium",
+          "unknown_reason": "missing_added_nutrient",
+          "unknown_when_missing": true,
+          "evidence_ids": [
+            "e-nutrition-2"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.niftem.ac.in/storage/uploads/media/1TnLwY1qlT38LwVhHJlAZIxVXfGqg7ZKhUAJFWRC.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.icmr.added_fat_g.liquid",
+          "nutrient_key": "added_fat_g",
+          "label": "Added fat (g)",
+          "unit": "g",
+          "band_type": "risk",
+          "basis": "per_100ml",
+          "applies_to": "liquid",
+          "low_max": 0.75,
+          "medium_max": 1.5,
+          "high_min": 1.5,
+          "daily_target": "Minimize added fat",
+          "source_basis": "ICMR liquids added fat",
+          "effective_date": "2026-02-13",
+          "confidence_level": "low",
+          "unknown_reason": "missing_added_nutrient",
+          "unknown_when_missing": true,
+          "evidence_ids": [
+            "e-nutrition-3"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.niftem.ac.in/storage/uploads/media/1TnLwY1qlT38LwVhHJlAZIxVXfGqg7ZKhUAJFWRC.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.icmr.energy_kcal.solid",
+          "nutrient_key": "energy_kcal",
+          "label": "Energy (kcal)",
+          "unit": "kcal",
+          "band_type": "risk",
+          "basis": "per_100g",
+          "applies_to": "solid",
+          "low_max": 100,
+          "medium_max": 250,
+          "high_min": 250,
+          "daily_target": "Lower density preferred",
+          "source_basis": "ICMR solids energy trigger",
+          "effective_date": "2026-02-13",
+          "confidence_level": "medium",
+          "evidence_ids": [
+            "e-nutrition-1"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.niftem.ac.in/storage/uploads/media/1TnLwY1qlT38LwVhHJlAZIxVXfGqg7ZKhUAJFWRC.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        },
+        {
+          "rule_id": "nutrient.icmr.energy_kcal.liquid",
+          "nutrient_key": "energy_kcal",
+          "label": "Energy (kcal)",
+          "unit": "kcal",
+          "band_type": "risk",
+          "basis": "per_100ml",
+          "applies_to": "liquid",
+          "low_max": 30,
+          "medium_max": 70,
+          "high_min": 70,
+          "daily_target": "Lower density preferred",
+          "source_basis": "ICMR liquids energy trigger",
+          "effective_date": "2026-02-13",
+          "confidence_level": "medium",
+          "evidence_ids": [
+            "e-nutrition-1"
+          ],
+          "evidence_tier": "reference",
+          "source_urls": [
+            "https://www.niftem.ac.in/storage/uploads/media/1TnLwY1qlT38LwVhHJlAZIxVXfGqg7ZKhUAJFWRC.pdf"
+          ],
+          "last_verified_at": "2026-02-13",
+          "is_provisional": true
+        }
+      ],
+      "risk_signal_rules": []
+    },
+    {
+      "profile_id": "canada_fop_reference_v1",
+      "framework_name": "Canada FOP reference",
+      "source_system": "Health Canada FOP",
+      "jurisdiction": "Canada",
+      "status": "active",
+      "guidance_only": true,
+      "priority": 4,
+      "nutrient_rules": [],
+      "risk_signal_rules": []
+    },
+    {
+      "profile_id": "who_population_guidance_v1",
+      "framework_name": "WHO guidance",
+      "source_system": "WHO",
+      "jurisdiction": "Global",
+      "status": "active",
+      "guidance_only": true,
+      "priority": 5,
+      "nutrient_rules": [],
+      "risk_signal_rules": []
+    },
+    {
+      "profile_id": "hsr_reference_v1",
+      "framework_name": "HSR reference",
+      "source_system": "Australia Health Star Rating",
+      "jurisdiction": "Australia",
+      "status": "active",
+      "guidance_only": true,
+      "priority": 6,
+      "nutrient_rules": [],
+      "risk_signal_rules": []
+    }
+  ],
+  "evidence_map": {
+    "high_sugar": [
+      "e-nutrition-1"
+    ],
+    "high_salt": [
+      "e-nutrition-2"
+    ],
+    "high_saturated_fat": [
+      "e-nutrition-3"
+    ]
+  }
+}

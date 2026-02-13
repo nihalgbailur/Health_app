@@ -1,0 +1,48 @@
+[
+  {
+    "id": "ra-fda-import-2025-12-shrimp",
+    "jurisdiction": "US",
+    "authority": "U.S. FDA",
+    "action_type": "import_refusal",
+    "product_name": "Frozen shrimp consignments",
+    "reason_category": "Residue non-compliance",
+    "hazard": "Antibiotic residue markers",
+    "action_date": "2025-12-02",
+    "status": "confirmed",
+    "source_urls": [
+      "https://www.accessdata.fda.gov/cms_ia/importalert_16.html"
+    ],
+    "confidence": "Regulator Confirmed"
+  },
+  {
+    "id": "ra-uk-fsa-2025-11-spice-recall",
+    "jurisdiction": "EU",
+    "authority": "UK FSA",
+    "action_type": "recall",
+    "product_name": "Selected spice mix batches",
+    "brand": "Everest",
+    "reason_category": "Microbiological contamination",
+    "hazard": "Potential salmonella contamination",
+    "action_date": "2025-11-18",
+    "status": "confirmed",
+    "source_urls": [
+      "https://www.food.gov.uk/news-alerts"
+    ],
+    "confidence": "Regulator Confirmed"
+  },
+  {
+    "id": "lead-pdf-claim-mustard-oil-2026-02-13",
+    "jurisdiction": "Global",
+    "authority": "HealthLens review queue",
+    "action_type": "update",
+    "product_name": "Unprocessed mustard oil claims",
+    "reason_category": "Unverified cross-market claim",
+    "hazard": "Conflicting reports pending regulator verification",
+    "action_date": "2026-02-13",
+    "status": "under_review",
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ],
+    "confidence": "Under Review"
+  }
+]

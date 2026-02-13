@@ -31,9 +31,11 @@ function usage() {
     'Usage:',
     '  node scripts/ingest_catalog.mjs --mode daily',
     '  node scripts/ingest_catalog.mjs --barcode <code> --force',
+    '  node scripts/ingest_catalog.mjs --regulatory-mode daily',
     'Options:',
     '  --mode daily           Refresh stale records and queued barcodes',
     '  --barcode <code>       Refresh a specific barcode (repeatable)',
+    '  --regulatory-mode daily  Refresh regulator action feed',
     '  --force                Force refresh even if record is not stale',
     '  --catalog-dir <path>   Override catalog directory',
     '  --dry-run              Do not write output files'
@@ -43,6 +45,7 @@ function usage() {
 function parseArgs(argv) {
   const args = {
     mode: null,
+    regulatoryMode: null,
     barcodes: [],
     force: false,
     catalogDir: DEFAULT_CATALOG_DIR,
@@ -61,6 +64,12 @@ function parseArgs(argv) {
     if (token === '--barcode') {
       const barcode = String(argv[index + 1] || '').trim();
       if (barcode) args.barcodes.push(barcode);
+      index += 1;
+      continue;
+    }
+
+    if (token === '--regulatory-mode') {
+      args.regulatoryMode = argv[index + 1] || null;
       index += 1;
       continue;
     }
@@ -466,6 +475,9 @@ function parseNutritionFromJsonLd(nutrition) {
   const saltG = parseQuantity(nutrition.saltContent, 'g');
   const protein = parseQuantity(nutrition.proteinContent, 'g');
   const fiber = parseQuantity(nutrition.fiberContent, 'g');
+  const addedSugar = parseQuantity(nutrition.addedSugarContent || nutrition.addedSugars || nutrition.addedSugar, 'g');
+  const addedFat = parseQuantity(nutrition.addedFatContent || nutrition.addedFat, 'g');
+  const addedSaltMg = parseQuantity(nutrition.addedSaltContent || nutrition.addedSalt, 'mg');
 
   const inferredSalt = saltG !== undefined ? saltG : sodiumMg === undefined ? undefined : Number(((sodiumMg / 1000) * 2.5).toFixed(2));
   const inferredSodium = sodiumMg !== undefined ? sodiumMg : saltG === undefined ? undefined : Number(((saltG / 2.5) * 1000).toFixed(2));
@@ -478,7 +490,10 @@ function parseNutritionFromJsonLd(nutrition) {
     salt_g: inferredSalt,
     sodium_mg: inferredSodium,
     protein_g: protein,
-    fiber_g: fiber
+    fiber_g: fiber,
+    added_sugars_g: addedSugar,
+    added_salt_mg: addedSaltMg,
+    added_fat_g: addedFat
   };
 
   return Object.fromEntries(Object.entries(out).filter(([, value]) => value !== undefined));
@@ -509,8 +524,11 @@ function parseNutritionFromText(text) {
   const satFat = valueFor(/saturated\s+fat\s*[:\-]?\s*([0-9.,]+\s*(?:mg|g))/i, 'g');
   const protein = valueFor(/protein\s*[:\-]?\s*([0-9.,]+\s*(?:mg|g))/i, 'g');
   const fiber = valueFor(/(?:fibre|fiber)\s*[:\-]?\s*([0-9.,]+\s*(?:mg|g))/i, 'g');
+  const addedSugar = valueFor(/added\s+sugars?\s*[:\-]?\s*([0-9.,]+\s*(?:mg|g))/i, 'g');
+  const addedSaltMg = valueFor(/added\s+salt\s*[:\-]?\s*([0-9.,]+\s*(?:mg|g))/i, 'mg');
+  const addedFat = valueFor(/added\s+fat\s*[:\-]?\s*([0-9.,]+\s*(?:mg|g))/i, 'g');
 
-  if ([sugar, salt, sodium, fat, satFat, protein, fiber].every((value) => value === undefined)) {
+  if ([sugar, salt, sodium, fat, satFat, protein, fiber, addedSugar, addedSaltMg, addedFat].every((value) => value === undefined)) {
     return {};
   }
 
@@ -521,7 +539,10 @@ function parseNutritionFromText(text) {
     total_fat_g: fat,
     saturated_fat_g: satFat,
     protein_g: protein,
-    fiber_g: fiber
+    fiber_g: fiber,
+    added_sugars_g: addedSugar,
+    added_salt_mg: addedSaltMg,
+    added_fat_g: addedFat
   };
 }
 
@@ -788,10 +809,224 @@ export async function runIngestion({
   };
 }
 
+const REGULATORY_ADAPTERS = [
+  {
+    id: 'fda',
+    authority: 'U.S. FDA',
+    jurisdiction: 'US',
+    endpoint: 'https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts'
+  },
+  {
+    id: 'eu_rasff',
+    authority: 'EU RASFF',
+    jurisdiction: 'EU',
+    endpoint: 'https://food.ec.europa.eu/safety/rasff-food-and-feed-safety-alerts_en'
+  },
+  {
+    id: 'uk_fsa',
+    authority: 'UK FSA',
+    jurisdiction: 'EU',
+    endpoint: 'https://www.food.gov.uk/news-alerts'
+  },
+  {
+    id: 'health_canada',
+    authority: 'Health Canada',
+    jurisdiction: 'Global',
+    endpoint: 'https://www.canada.ca/en/health-canada/services/food-nutrition/food-safety/food-recalls-allergy-alerts.html'
+  }
+];
+
+function normalizeRegulatoryActionItem(item) {
+  const actionTypeRaw = String(item?.action_type || 'update').toLowerCase();
+  const actionType = ['ban', 'recall', 'import_refusal', 'alert', 'update'].includes(actionTypeRaw)
+    ? actionTypeRaw
+    : actionTypeRaw === 'refusal'
+      ? 'import_refusal'
+      : 'update';
+  const status = String(item?.status || '').toLowerCase() === 'confirmed' ? 'confirmed' : 'under_review';
+  const sourceUrls = Array.isArray(item?.source_urls) ? item.source_urls.map((url) => String(url || '').trim()).filter(Boolean) : [];
+  const confidence = String(item?.confidence || '').toLowerCase().includes('regulator')
+    ? 'Regulator Confirmed'
+    : String(item?.confidence || '').toLowerCase().includes('independent')
+      ? 'Independent Evidence'
+      : 'Under Review';
+
+  const safeActionType = status === 'confirmed' ? actionType : actionType === 'ban' ? 'update' : actionType;
+  const safeStatus = status === 'confirmed' && sourceUrls.length === 0 ? 'under_review' : status;
+  const safeConfidence = safeStatus === 'confirmed' ? confidence : 'Under Review';
+
+  return {
+    id: String(item?.id || '').trim(),
+    jurisdiction: String(item?.jurisdiction || 'Global').trim() || 'Global',
+    authority: String(item?.authority || 'Unknown authority').trim() || 'Unknown authority',
+    action_type: safeActionType,
+    barcode: item?.barcode ? String(item.barcode).trim() : undefined,
+    product_name: String(item?.product_name || '').trim(),
+    brand: item?.brand ? String(item.brand).trim() : undefined,
+    manufacturer: item?.manufacturer ? String(item.manufacturer).trim() : undefined,
+    reason_category: String(item?.reason_category || 'General safety').trim() || 'General safety',
+    hazard: String(item?.hazard || 'Not specified').trim() || 'Not specified',
+    action_date: String(item?.action_date || '').trim(),
+    status: safeStatus,
+    source_urls: sourceUrls,
+    confidence: safeConfidence
+  };
+}
+
+function mergeRegulatoryActions(existing, incoming) {
+  const byId = new Map();
+  for (const item of [...existing, ...incoming]) {
+    if (!item?.id) continue;
+    const normalized = normalizeRegulatoryActionItem(item);
+    if (!normalized.product_name) continue;
+
+    const current = byId.get(normalized.id);
+    if (!current) {
+      byId.set(normalized.id, normalized);
+      continue;
+    }
+
+    const currentScore = current.status === 'confirmed' ? 2 : current.confidence === 'Independent Evidence' ? 1 : 0;
+    const nextScore = normalized.status === 'confirmed' ? 2 : normalized.confidence === 'Independent Evidence' ? 1 : 0;
+    byId.set(normalized.id, nextScore >= currentScore ? normalized : current);
+  }
+
+  return [...byId.values()].sort((left, right) => String(right.action_date || '').localeCompare(String(left.action_date || '')));
+}
+
+function normalizeRegulatoryLeadFeed(payload) {
+  if (!Array.isArray(payload)) return [];
+  return payload
+    .map((entry, index) => normalizeRegulatoryActionItem({
+      id: entry?.id || `lead-${index + 1}`,
+      jurisdiction: entry?.jurisdiction || 'Global',
+      authority: entry?.authority || 'HealthLens lead queue',
+      action_type: entry?.action_type || 'update',
+      barcode: entry?.barcode,
+      product_name: entry?.product_name || entry?.title || '',
+      brand: entry?.brand,
+      manufacturer: entry?.manufacturer,
+      reason_category: entry?.reason_category || 'Unverified external claim',
+      hazard: entry?.hazard || 'Pending regulator verification',
+      action_date: entry?.action_date || new Date().toISOString().slice(0, 10),
+      status: 'under_review',
+      source_urls: Array.isArray(entry?.source_urls) ? entry.source_urls : [],
+      confidence: 'Under Review'
+    }))
+    .filter((item) => item.id && item.product_name);
+}
+
+async function fetchRegulatoryAdapter(adapter, { fetchImpl, timeoutMs = 6000 }) {
+  const payload = await fetchJson(adapter.endpoint, {
+    fetchImpl,
+    timeoutMs,
+    headers: { Accept: 'application/json' }
+  });
+
+  if (!payload || typeof payload !== 'object') return [];
+
+  const records = Array.isArray(payload.items)
+    ? payload.items
+    : Array.isArray(payload.results)
+      ? payload.results
+      : [];
+
+  return records
+    .map((entry, index) => normalizeRegulatoryActionItem({
+      id: entry?.id || `${adapter.id}-${index + 1}`,
+      jurisdiction: entry?.jurisdiction || adapter.jurisdiction,
+      authority: entry?.authority || adapter.authority,
+      action_type: entry?.action_type || entry?.event_type || 'update',
+      barcode: entry?.barcode,
+      product_name: entry?.product_name || entry?.title || '',
+      brand: entry?.brand,
+      manufacturer: entry?.manufacturer,
+      reason_category: entry?.reason_category || entry?.category || 'Regulatory update',
+      hazard: entry?.hazard || entry?.summary || 'Not specified',
+      action_date: entry?.action_date || entry?.date || new Date().toISOString().slice(0, 10),
+      status: entry?.status || 'under_review',
+      source_urls: Array.isArray(entry?.source_urls) ? entry.source_urls : [adapter.endpoint],
+      confidence: entry?.confidence || 'Under Review'
+    }))
+    .filter((item) => item.id && item.product_name);
+}
+
+export async function runRegulatoryIngestion({
+  mode = 'daily',
+  catalogDir = DEFAULT_CATALOG_DIR,
+  dryRun = false,
+  fetchImpl = globalThis.fetch,
+  now = new Date()
+} = {}) {
+  if (mode !== 'daily') {
+    throw new Error('Only daily regulatory ingestion mode is supported.');
+  }
+
+  await fs.mkdir(catalogDir, { recursive: true });
+
+  const nowISO = now.toISOString();
+  const actionsPath = path.join(catalogDir, 'regulatory_actions.json');
+  const leadsPath = path.join(catalogDir, 'regulatory_leads.json');
+  const logPath = path.join(catalogDir, 'regulatory_ingestion_log.jsonl');
+
+  const existing = await readJsonFile(actionsPath, []);
+  const leads = normalizeRegulatoryLeadFeed(await readJsonFile(leadsPath, []));
+  const logs = [];
+  const incoming = [];
+
+  for (const adapter of REGULATORY_ADAPTERS) {
+    try {
+      const pulled = await fetchRegulatoryAdapter(adapter, { fetchImpl });
+      incoming.push(...pulled);
+      logs.push({
+        ts: nowISO,
+        adapter: adapter.id,
+        status: 'ok',
+        count: pulled.length
+      });
+    } catch (error) {
+      logs.push({
+        ts: nowISO,
+        adapter: adapter.id,
+        status: 'error',
+        message: String(error?.message || error || 'adapter_failed')
+      });
+    }
+  }
+
+  if (leads.length) {
+    incoming.push(...leads);
+    logs.push({
+      ts: nowISO,
+      adapter: 'lead_queue',
+      status: 'ok',
+      count: leads.length
+    });
+  }
+
+  const merged = mergeRegulatoryActions(
+    Array.isArray(existing) ? existing.map((item) => normalizeRegulatoryActionItem(item)) : [],
+    incoming
+  );
+
+  if (!dryRun) {
+    await writeJsonFile(actionsPath, merged);
+    await appendLogLines(logPath, logs);
+  }
+
+  return {
+    catalogDir,
+    mode,
+    records: merged.length,
+    incoming: incoming.length,
+    dryRun
+  };
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
 
-  if (!args.mode && !args.barcodes.length) {
+  if (!args.mode && !args.barcodes.length && !args.regulatoryMode) {
     console.error(usage());
     process.exit(1);
   }
@@ -801,13 +1036,30 @@ async function main() {
     process.exit(1);
   }
 
-  const result = await runIngestion({
-    mode: args.mode,
-    barcodes: args.barcodes,
-    force: args.force,
-    catalogDir: args.catalogDir,
-    dryRun: args.dryRun
-  });
+  if (args.regulatoryMode && args.regulatoryMode !== 'daily') {
+    console.error('Only --regulatory-mode daily is currently supported.');
+    process.exit(1);
+  }
+
+  const result = {};
+
+  if (args.mode || args.barcodes.length) {
+    result.catalog = await runIngestion({
+      mode: args.mode,
+      barcodes: args.barcodes,
+      force: args.force,
+      catalogDir: args.catalogDir,
+      dryRun: args.dryRun
+    });
+  }
+
+  if (args.regulatoryMode) {
+    result.regulatory = await runRegulatoryIngestion({
+      mode: args.regulatoryMode,
+      catalogDir: args.catalogDir,
+      dryRun: args.dryRun
+    });
+  }
 
   console.log(JSON.stringify(result, null, 2));
 }

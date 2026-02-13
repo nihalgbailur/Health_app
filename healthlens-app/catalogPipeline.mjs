@@ -6,7 +6,10 @@ const NUTRITION_KEYS = [
   'salt_g',
   'sodium_mg',
   'fiber_g',
-  'protein_g'
+  'protein_g',
+  'added_sugars_g',
+  'added_salt_mg',
+  'added_fat_g'
 ];
 
 const GENERIC_BRAND_TOKENS = new Set([
@@ -28,6 +31,7 @@ const GENERIC_BRAND_TOKENS = new Set([
 ]);
 
 const DEFAULT_SCORE_SPARSE_THRESHOLD = 4;
+const LIQUID_HINT_PATTERN = /(drink|beverage|juice|water|soda|tea|coffee|milk|shake|smoothie|syrup)/i;
 
 export function parseNumber(value) {
   if (value === null || value === undefined) return undefined;
@@ -55,6 +59,34 @@ export function titleCase(value) {
 
 export function firstDefined(...values) {
   return values.find((value) => value !== undefined && value !== null);
+}
+
+function parseServingSizeFromText(value) {
+  const text = String(value || '').trim().toLowerCase();
+  if (!text) return { serving_size_g: undefined, serving_size_ml: undefined };
+
+  const numeric = parseNumber(text);
+  if (numeric === undefined) return { serving_size_g: undefined, serving_size_ml: undefined };
+
+  if (/\bml\b/.test(text) || /\bl\b/.test(text)) {
+    return { serving_size_g: undefined, serving_size_ml: numeric };
+  }
+
+  if (/\bg\b/.test(text) || /\bgram\b/.test(text)) {
+    return { serving_size_g: numeric, serving_size_ml: undefined };
+  }
+
+  return { serving_size_g: numeric, serving_size_ml: undefined };
+}
+
+export function normalizeProductForm(productForm, category = '', name = '') {
+  const explicit = String(productForm || '').trim().toLowerCase();
+  if (explicit === 'solid' || explicit === 'liquid') return explicit;
+
+  const hint = `${String(category || '')} ${String(name || '')}`.toLowerCase();
+  if (!hint.trim()) return 'unknown';
+  if (LIQUID_HINT_PATTERN.test(hint)) return 'liquid';
+  return 'solid';
 }
 
 function uniqueStrings(values) {
@@ -257,6 +289,30 @@ export function extractNutritionFromOpenFoodFacts(nutriments = {}) {
   const sodiumGrams = firstDefined(parseNumber(nutriments.sodium_100g), parseNumber(nutriments.sodium));
   const fiber = firstDefined(parseNumber(nutriments.fiber_100g), parseNumber(nutriments.fiber));
   const protein = firstDefined(parseNumber(nutriments.proteins_100g), parseNumber(nutriments.proteins));
+  const addedSugars = firstDefined(
+    parseNumber(nutriments['added-sugars_100g']),
+    parseNumber(nutriments['added-sugars']),
+    parseNumber(nutriments.added_sugars_100g),
+    parseNumber(nutriments.added_sugars)
+  );
+  const addedFat = firstDefined(
+    parseNumber(nutriments['added-fat_100g']),
+    parseNumber(nutriments['added-fat']),
+    parseNumber(nutriments.added_fat_100g),
+    parseNumber(nutriments.added_fat)
+  );
+  const addedSaltMg = firstDefined(
+    parseNumber(nutriments.added_salt_mg_100g),
+    parseNumber(nutriments.added_salt_mg),
+    parseNumber(nutriments['added-salt_mg_100g']),
+    parseNumber(nutriments['added-salt_mg']),
+    parseNumber(nutriments['added-salt_100g']) !== undefined
+      ? Number((parseNumber(nutriments['added-salt_100g']) * 1000).toFixed(2))
+      : undefined,
+    parseNumber(nutriments.added_salt_100g) !== undefined
+      ? Number((parseNumber(nutriments.added_salt_100g) * 1000).toFixed(2))
+      : undefined
+  );
 
   const sodiumMg =
     sodiumGrams === undefined
@@ -279,7 +335,10 @@ export function extractNutritionFromOpenFoodFacts(nutriments = {}) {
     salt_g: saltG,
     sodium_mg: sodiumMg,
     fiber_g: fiber,
-    protein_g: protein
+    protein_g: protein,
+    added_sugars_g: addedSugars,
+    added_salt_mg: addedSaltMg,
+    added_fat_g: addedFat
   });
 }
 
@@ -295,6 +354,9 @@ export function finalizeProductRecord(product, {
     name: String(product?.name || '').trim() || 'Unknown product',
     brand: String(product?.brand || '').trim() || 'Unknown brand',
     category: String(product?.category || '').trim() || 'General',
+    product_form: normalizeProductForm(product?.product_form, product?.category, product?.name),
+    serving_size_g: parseNumber(product?.serving_size_g),
+    serving_size_ml: parseNumber(product?.serving_size_ml),
     region_availability: uniqueStrings(product?.region_availability || ['Global']),
     ingredients_raw: uniqueStrings(product?.ingredients_raw || []),
     nutrition_per_100g: normalizeNutritionShape(product?.nutrition_per_100g || {}),
@@ -315,12 +377,16 @@ export function normalizeOffProduct(rawProduct, {
   sourceUrl,
   nowISO = new Date().toISOString()
 } = {}) {
+  const serving = parseServingSizeFromText(rawProduct?.serving_size || rawProduct?.quantity || rawProduct?.product_quantity);
   const normalized = {
     id: `api-${barcode}`,
     barcode: String(barcode || rawProduct?.code || '').trim(),
     name: rawProduct?.product_name || rawProduct?.generic_name || `Unknown product (${barcode || rawProduct?.code || '-'})`,
     brand: deriveBrandFromOpenFoodFacts(rawProduct),
     category: normalizeCategoryFromOpenFoodFacts(rawProduct),
+    product_form: normalizeProductForm(rawProduct?.product_quantity_unit, normalizeCategoryFromOpenFoodFacts(rawProduct), rawProduct?.product_name),
+    serving_size_g: serving.serving_size_g,
+    serving_size_ml: serving.serving_size_ml,
     region_availability: mapOpenFoodFactsRegions(rawProduct?.countries_tags || [], rawProduct?.countries || ''),
     ingredients_raw: extractIngredientsFromOpenFoodFacts(rawProduct),
     nutrition_per_100g: extractNutritionFromOpenFoodFacts(rawProduct?.nutriments || {}),
@@ -336,12 +402,16 @@ export function normalizeScrapedProduct(scraped, {
   sourceUrl,
   nowISO = new Date().toISOString()
 } = {}) {
+  const serving = parseServingSizeFromText(scraped?.serving_size || scraped?.serving || '');
   const normalized = {
     id: `scrape-${barcode}`,
     barcode: String(barcode || scraped?.barcode || '').trim(),
     name: scraped?.name || `Unknown product (${barcode || '-'})`,
     brand: scraped?.brand || inferBrandFromName(scraped?.name || ''),
     category: scraped?.category || 'General',
+    product_form: normalizeProductForm(scraped?.product_form, scraped?.category, scraped?.name),
+    serving_size_g: serving.serving_size_g,
+    serving_size_ml: serving.serving_size_ml,
     region_availability: uniqueStrings(scraped?.region_availability || ['Global']),
     ingredients_raw: uniqueStrings(scraped?.ingredients_raw || []),
     nutrition_per_100g: normalizeNutritionShape(scraped?.nutrition_per_100g || {}),
@@ -358,6 +428,15 @@ function pickScalar(existingValue, incomingValue, preferIncoming) {
 
   if (!existing && incoming) return incoming;
   if (!incoming) return existing;
+  return preferIncoming ? incoming : existing;
+}
+
+function pickProductForm(existingValue, incomingValue, preferIncoming) {
+  const existing = normalizeProductForm(existingValue);
+  const incoming = normalizeProductForm(incomingValue);
+
+  if (existing === 'unknown' && incoming !== 'unknown') return incoming;
+  if (incoming === 'unknown') return existing;
   return preferIncoming ? incoming : existing;
 }
 
@@ -409,6 +488,15 @@ export function mergeProductRecords(existingRecord, incomingRecord, {
     name: pickScalar(existing.name, incoming.name, preferIncoming),
     brand: pickScalar(existing.brand, incoming.brand, preferIncoming),
     category: pickScalar(existing.category, incoming.category, preferIncoming),
+    product_form: pickProductForm(existing.product_form, incoming.product_form, preferIncoming),
+    serving_size_g: firstDefined(
+      preferIncoming ? incoming.serving_size_g : existing.serving_size_g,
+      preferIncoming ? existing.serving_size_g : incoming.serving_size_g
+    ),
+    serving_size_ml: firstDefined(
+      preferIncoming ? incoming.serving_size_ml : existing.serving_size_ml,
+      preferIncoming ? existing.serving_size_ml : incoming.serving_size_ml
+    ),
     region_availability: uniqueStrings([...(existing.region_availability || []), ...(incoming.region_availability || [])]),
     ingredients_raw: uniqueStrings(
       preferIncoming

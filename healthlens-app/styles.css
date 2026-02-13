@@ -357,7 +357,8 @@ button:disabled {
 .evidence-list,
 .signal-list,
 .nutrition-list,
-.swap-list {
+.swap-list,
+.framework-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -368,11 +369,18 @@ button:disabled {
 .signal-list li,
 .evidence-list li,
 .nutrition-list li,
-.swap-list li {
+.swap-list li,
+.framework-list li {
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   padding: 10px;
   background: var(--surface);
+}
+
+.framework-breakdown summary {
+  cursor: pointer;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
 
 .nutrition-item {
@@ -383,7 +391,7 @@ button:disabled {
 }
 
 .band {
-  min-width: 56px;
+  min-width: 104px;
   text-align: center;
   border-radius: 999px;
   font-size: 0.72rem;
@@ -417,6 +425,28 @@ button:disabled {
   border-radius: var(--radius-md);
   background: var(--surface);
   overflow-x: auto;
+}
+
+.nutrition-legend {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-row .meta {
+  margin-right: 4px;
 }
 
 .nutrition-table {
@@ -453,6 +483,15 @@ button:disabled {
 .meta {
   color: var(--ink-soft);
   font-size: 0.83rem;
+}
+
+.meta-list {
+  margin: 8px 0 0 16px;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
 }
 
 .empty-state {

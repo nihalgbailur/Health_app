@@ -19,12 +19,18 @@ Mobile-first PWA prototype implementing the HealthLens plan:
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalogPipeline.mjs` shared normalization, merge, staleness, and completeness utilities
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalogLoader.mjs` runtime catalog loader + scan queue export helpers
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/riskEngine.mjs` rule engine, nutrition bands, severity calculation, swap recommendations
+- `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/rulesLoader.mjs` global rules profile loader and runtime flags
+- `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/config/rules.json` strictest-wins multi-framework rule registry
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/tests/riskEngine.test.mjs` scenario tests for core risk logic
+- `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/tests/globalGuardrail.test.mjs` strictest global framework verdict tests
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/tests/catalogPipeline.test.mjs` normalization and merge policy tests
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/tests/ingestCatalog.test.mjs` ingestion integration tests
+- `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/tests/regulatoryIngestion.test.mjs` regulator feed ingestion tests
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/scripts/ingest_catalog.mjs` CLI ingestion runner
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalog/products.json` shared catalog store
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalog/barcode_queue.json` ingestion queue file
+- `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalog/regulatory_actions.json` regulator-confirmed and under-review action feed
+- `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalog/regulatory_ingestion_log.jsonl` regulatory ingestion event log
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalog/source_allowlist.json` scraping allowlist policy
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/catalog/ingestion_log.jsonl` ingestion event log
 - `/Users/nihalgbailur/Downloads/Healthapp/healthlens-app/manifest.webmanifest` PWA metadata
@@ -54,6 +60,8 @@ node ./tests/riskEngine.test.mjs
 node ./tests/catalogPipeline.test.mjs
 node ./tests/ingestCatalog.test.mjs
 node ./tests/nutritionTable.test.mjs
+node ./tests/globalGuardrail.test.mjs
+node ./tests/regulatoryIngestion.test.mjs
 ```
 
 ## Catalog ingestion
@@ -74,6 +82,12 @@ Dry run:
 
 ```bash
 node ./scripts/ingest_catalog.mjs --mode daily --dry-run
+```
+
+Regulatory action ingestion (official-source adapters + lead queue):
+
+```bash
+node ./scripts/ingest_catalog.mjs --regulatory-mode daily
 ```
 
 ## Demo barcodes
@@ -106,6 +120,17 @@ Banding logic follows the report thresholds:
 - Beneficial nutrients (`fiber_g`, `protein_g`):
   - low = worse, high = better
 - Protein uses `% energy = (protein_g * 4 / energy_kcal) * 100`; if energy is missing, protein band is `Unknown`.
+
+## Global guardrail verdict
+
+HealthLens now computes:
+- Per-framework verdicts (`UK traffic-light`, `India ICMR HFSS`, `Canada FOP reference`, `WHO guidance`, `HSR reference`)
+- One final `Global guardrail verdict` using strictest-wins across available framework signals.
+- `Regulatory action engine` verdict from regulator-confirmed recalls/bans/refusals (separate trust track).
+
+Unknowns are explicit:
+- Missing added nutrient values (`added_sugars_g`, `added_salt_mg`, `added_fat_g`) stay `Unknown`.
+- Added values are never inferred from total sugar/salt/fat.
 
 ## Install on Android (Netlify PWA)
 
@@ -143,8 +168,10 @@ Production URL placeholder: `https://<your-site>.netlify.app`
 - Every `High` and `Moderate` signal must include at least one evidence card.
 - Evidence labels are explicit:
   - `Regulator Confirmed`
-  - `Independent Testing`
+  - `Independent Evidence`
   - `Under Review`
+- Unverified claims from secondary reports are never shown as confirmed bans.
+- Brand-level ban claims are downgraded to `Under Review` unless a verifiable regulator source exists.
 - UI includes non-diagnostic legal-safe language.
 
 ## Note

@@ -1,0 +1,15 @@
+[
+  {
+    "id": "lead-pdf-claim-red-dye-3-2026-02-13",
+    "jurisdiction": "Global",
+    "authority": "HealthLens lead queue",
+    "action_type": "update",
+    "product_name": "Products listing erythrosine (Red Dye 3) in imported markets",
+    "reason_category": "Unverified claim from secondary report",
+    "hazard": "Possible synthetic dye concern pending regulator-level verification",
+    "action_date": "2026-02-13",
+    "source_urls": [
+      "local://pdf-lead/banned-indian-products-grok-2026-02-13"
+    ]
+  }
+]

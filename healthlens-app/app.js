@@ -7,12 +7,13 @@ import {
   recommendSwaps,
   validateEvidenceCompleteness
 } from './riskEngine.mjs';
-import { renderNutritionChipsHTML, renderNutritionTableHTML } from './nutritionTable.mjs';
+import { renderNutritionChipsHTML, renderNutritionLegendHTML, renderNutritionTableHTML } from './nutritionTable.mjs';
 import {
   clearQueuedBarcodes,
   enqueueBarcodeForIngestion,
   exportQueuedBarcodes,
   loadCatalogWithSeedFallback,
+  loadRegulatoryActions,
   readQueuedBarcodes
 } from './catalogLoader.mjs';
 import {
@@ -37,6 +38,7 @@ const CAMERA_BARCODE_FORMATS = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128',
 const state = {
   activeTab: 'home',
   catalog: [...PRODUCTS],
+  regulatoryActions: [],
   savedIds: new Set(readSavedIds()),
   recentChecks: readRecentChecks(),
   coachIndex: readCoachIndex(),
@@ -92,7 +94,12 @@ const elements = {
 void init();
 
 async function init() {
-  state.catalog = await loadCatalogWithSeedFallback(PRODUCTS);
+  const [catalog, regulatoryActions] = await Promise.all([
+    loadCatalogWithSeedFallback(PRODUCTS),
+    loadRegulatoryActions()
+  ]);
+  state.catalog = catalog;
+  state.regulatoryActions = regulatoryActions;
 
   bindTabNavigation();
   bindScannerForms();
@@ -166,7 +173,7 @@ function bindScannerForms() {
       return;
     }
 
-    const result = evaluateProduct(null, { ingredients });
+    const result = evaluateProduct(null, { ingredients, regulatory_actions: state.regulatoryActions });
     completeScan({
       product: null,
       result,
@@ -275,7 +282,7 @@ function bindSavedAndCompare() {
     const right = getProductById(rightId);
 
     if (!left || !right) return;
-    const comparison = compareProducts(left, right);
+    const comparison = compareProducts(left, right, { regulatory_actions: state.regulatoryActions });
 
     elements.compareResult.innerHTML = renderComparisonHTML(left, right, comparison);
   });
@@ -538,7 +545,7 @@ async function runBarcodeScan(barcode) {
         }
       }
 
-      const result = evaluateProduct(selectedProduct);
+      const result = evaluateProduct(selectedProduct, { regulatory_actions: state.regulatoryActions });
       completeScan({
         product: selectedProduct,
         result,
@@ -558,7 +565,7 @@ async function runBarcodeScan(barcode) {
         queueBarcodeForIngestion(barcode, 'api_sparse_needs_scrape');
       }
 
-      const result = evaluateProduct(liveProduct);
+      const result = evaluateProduct(liveProduct, { regulatory_actions: state.regulatoryActions });
       completeScan({
         product: liveProduct,
         result,
@@ -570,7 +577,7 @@ async function runBarcodeScan(barcode) {
     }
 
     queueBarcodeForIngestion(barcode, 'api_miss_needs_scrape');
-    const result = evaluateProduct(null, { ingredients: [] });
+    const result = evaluateProduct(null, { ingredients: [], regulatory_actions: state.regulatoryActions });
     completeScan({
       product: null,
       result,
@@ -715,10 +722,13 @@ function renderScanResult() {
   if (!state.lastScan) return;
 
   const { product, result, mode, manualIngredients, barcode, source } = state.lastScan;
-  const severityClass = result.severity.toLowerCase();
+  const guardrailVerdict = result.global_guardrail_verdict || result.severity;
+  const severityClass = guardrailVerdict.toLowerCase();
   const evidencePolicyLabel = getEvidencePolicyLabel(result);
+  const confidenceSummary = renderConfidenceSummary(result);
+  const regulatoryActions = renderRegulatoryActions(result.regulatory_action_matches || []);
 
-  const swaps = product ? recommendSwaps(state.catalog, product, result) : [];
+  const swaps = product ? recommendSwaps(state.catalog, product, result, { regulatory_actions: state.regulatoryActions }) : [];
   const swapHTML = swaps.length
     ? `<ul class="swap-list">${swaps
         .map((swap) => {
@@ -750,8 +760,8 @@ function renderScanResult() {
     <div class="result-grid">
       <div>
         <div class="badge-row">
-          <span class="badge ${severityClass}">${result.severity}</span>
-          <span class="meta">Evidence policy: ${escapeHTML(evidencePolicyLabel)}</span>
+          <span class="badge ${severityClass}">${guardrailVerdict}</span>
+          <span class="meta">Global guardrail verdict • Evidence policy: ${escapeHTML(evidencePolicyLabel)} • Confidence: ${escapeHTML(String(result.overall_confidence || 'low').toUpperCase())}</span>
         </div>
         <h3>${headerTitle}</h3>
         <p>${escapeHTML(result.summary)}</p>
@@ -784,7 +794,24 @@ function renderScanResult() {
       </div>
 
       <div>
+        <h3>Framework breakdown</h3>
+        ${renderFrameworkBreakdown(result.framework_verdicts || [])}
+      </div>
+
+      <div>
+        <h3>Why this confidence?</h3>
+        ${confidenceSummary}
+      </div>
+
+      <div>
+        <h3>Regulatory actions</h3>
+        ${regulatoryActions}
+      </div>
+
+      <div>
         <h3>Nutrition traffic light (per 100g)</h3>
+        <p class="meta">Profile: ${escapeHTML(result.rules_profile_id || 'global_guardrail_v1')} • Rules v${escapeHTML(result.rules_version || '1.0.0')}</p>
+        ${renderNutritionLegendHTML(escapeHTML)}
         ${renderNutritionChipsHTML(result.nutrition_assessment, escapeHTML)}
         ${renderNutritionTableHTML(result.nutrition_assessment, escapeHTML)}
       </div>
@@ -800,7 +827,10 @@ function renderScanResult() {
       </div>
 
       <p class="meta">
-        Informational only. Risk signals are evidence-driven and may include under-review findings when regulator confirmation is pending.
+        This result aggregates international health frameworks because enforcement and labeling practices vary by market.
+      </p>
+      <p class="meta">
+        Informational only, not medical or legal advice. Risk signals are evidence-driven and may include under-review findings when regulator confirmation is pending.
       </p>
     </div>
   `;
@@ -819,6 +849,92 @@ function renderRiskSignals(signals) {
           <p><strong>${escapeHTML(signal.ingredient_or_issue)}</strong></p>
           <p>${escapeHTML(signal.explanation_short)}</p>
         </li>`;
+    })
+    .join('')}</ul>`;
+}
+
+function renderFrameworkBreakdown(frameworkVerdicts) {
+  if (!frameworkVerdicts.length) {
+    return '<p class="meta">Framework verdicts unavailable for this scan.</p>';
+  }
+
+  return `<details class="framework-breakdown" open>
+    <summary>Open framework verdicts</summary>
+    <ul class="framework-list">${frameworkVerdicts
+      .map((framework) => {
+        const severityClass = String(framework.severity || 'Unknown').toLowerCase();
+        const unknownNotes = Array.isArray(framework.unknown_reasons) && framework.unknown_reasons.length
+          ? `<p class="meta">Unknown reasons: ${escapeHTML(framework.unknown_reasons.join(', '))}</p>`
+          : '';
+        const triggered = Array.isArray(framework.triggered_rules) && framework.triggered_rules.length
+          ? `<p class="meta">Triggered rules: ${escapeHTML(framework.triggered_rules.join(', '))}</p>`
+          : '<p class="meta">No triggered high/moderate rule in this framework.</p>';
+
+        return `<li>
+          <div class="badge-row">
+            <span class="badge ${severityClass}">${escapeHTML(framework.severity || 'Unknown')}</span>
+            <span class="meta">${escapeHTML(framework.framework_name || framework.framework_id || 'Framework')}</span>
+          </div>
+          ${triggered}
+          ${unknownNotes}
+        </li>`;
+      })
+      .join('')}</ul>
+  </details>`;
+}
+
+function confidenceToneLabel(level) {
+  const normalized = String(level || '').toLowerCase();
+  if (normalized === 'high') return 'Regulator Confirmed';
+  if (normalized === 'medium') return 'Independent Evidence';
+  return 'Under Review';
+}
+
+function renderConfidenceSummary(result) {
+  const level = String(result?.overall_confidence || 'low').toLowerCase();
+  const notes = Array.isArray(result?.confidence_notes) ? result.confidence_notes : [];
+  const label = confidenceToneLabel(level);
+  const levelClass = level === 'high' ? 'low' : level === 'medium' ? 'moderate' : 'unknown';
+
+  return `<div class="stack-item">
+    <div class="badge-row">
+      <span class="badge ${levelClass}">${escapeHTML(level.toUpperCase())}</span>
+      <span class="meta">${escapeHTML(label)}</span>
+    </div>
+    ${
+      notes.length
+        ? `<ul class="meta-list">${notes.map((note) => `<li>${escapeHTML(note)}</li>`).join('')}</ul>`
+        : '<p class="meta">Confidence notes unavailable for this scan.</p>'
+    }
+  </div>`;
+}
+
+function renderRegulatoryActions(actions) {
+  if (!actions.length) {
+    return '<p class="meta">No regulator action match found for this scan.</p>';
+  }
+
+  return `<ul class="evidence-list">${actions
+    .map((action) => {
+      const confidenceColor = SOURCE_BADGE_COLORS[action.confidence] || '#334';
+      const stateLabel = action.status === 'confirmed' ? 'Confirmed' : 'Under Review';
+      const stateClass = action.status === 'confirmed' ? 'low' : 'unknown';
+      const actionLabel = String(action.action_type || 'update').replaceAll('_', ' ').toUpperCase();
+      const links = Array.isArray(action.source_urls) && action.source_urls.length
+        ? action.source_urls.map((url) => `<a href="${escapeAttr(url)}" target="_blank" rel="noreferrer">Source</a>`).join(' • ')
+        : '<span class="meta">No source link available</span>';
+
+      return `<li>
+        <div class="badge-row">
+          <span class="badge source" style="background:${confidenceColor}">${escapeHTML(action.confidence || 'Under Review')}</span>
+          <span class="badge ${stateClass}">${escapeHTML(stateLabel)}</span>
+          <span class="meta">${escapeHTML(action.authority || 'Authority')} • ${escapeHTML(action.action_date || 'Date unknown')}</span>
+        </div>
+        <p><strong>${escapeHTML(action.product_name || 'Regulatory action')}</strong></p>
+        <p class="meta">${escapeHTML(actionLabel)} • ${escapeHTML(action.reason_category || 'General safety')}</p>
+        <p>${escapeHTML(action.hazard || 'Hazard details unavailable.')}</p>
+        <p class="meta">${links}</p>
+      </li>`;
     })
     .join('')}</ul>`;
 }
@@ -894,7 +1010,7 @@ function renderSaved() {
 
   elements.savedList.innerHTML = savedProducts
     .map((product) => {
-      const result = evaluateProduct(product);
+      const result = evaluateProduct(product, { regulatory_actions: state.regulatoryActions });
       return `<li class="stack-item">
         <div class="section-head">
           <p><strong>${escapeHTML(product.name)}</strong></p>

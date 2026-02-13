@@ -140,6 +140,160 @@ function run() {
   assert.match(sugarThreshold, /Low <= 5 g/i);
   assert.match(sugarThreshold, /High > 22\.5 g/i);
 
+  // 12. Global guardrail metadata should be present in every scan result.
+  assert.equal(typeof cereal.rules_profile_id, 'string');
+  assert.equal(typeof cereal.rules_version, 'string');
+  assert.equal(Array.isArray(cereal.framework_verdicts), true);
+  assert.equal(typeof cereal.global_guardrail_verdict, 'string');
+
+  // 13. Strictest-wins: high in one framework should produce High global verdict.
+  const strictestProduct = evaluateProduct({
+    id: 'strictest-high',
+    barcode: '0000000000099',
+    name: 'Strictest High Product',
+    brand: 'Guardrail',
+    category: 'Snacks',
+    region_availability: ['Global'],
+    product_form: 'solid',
+    ingredients_raw: [],
+    nutrition_per_100g: {
+      energy_kcal: 190,
+      total_sugars_g: 8,
+      added_sugars_g: 4,
+      salt_g: 0.2,
+      sodium_mg: 80,
+      saturated_fat_g: 1.1,
+      total_fat_g: 2
+    }
+  });
+  const ukVerdict = strictestProduct.framework_verdicts.find((item) => item.framework_id === 'uk_traffic_light_v1');
+  const icmrVerdict = strictestProduct.framework_verdicts.find((item) => item.framework_id === 'india_icmr_hfss_v1');
+  assert(ukVerdict, 'Expected UK framework verdict');
+  assert(icmrVerdict, 'Expected ICMR framework verdict');
+  assert.equal(ukVerdict.severity, 'Moderate');
+  assert.equal(icmrVerdict.severity, 'High');
+  assert.equal(strictestProduct.global_guardrail_verdict, 'High');
+
+  // 14. Missing added nutrient values stay Unknown in ICMR checks (no inference from totals).
+  const missingAddedProduct = evaluateProduct({
+    id: 'strictest-missing-added',
+    barcode: '0000000000100',
+    name: 'Missing Added Data',
+    brand: 'Guardrail',
+    category: 'Snacks',
+    region_availability: ['Global'],
+    product_form: 'solid',
+    ingredients_raw: [],
+    nutrition_per_100g: {
+      total_sugars_g: 8,
+      salt_g: 0.2,
+      sodium_mg: 80,
+      saturated_fat_g: 1.1,
+      total_fat_g: 2
+    }
+  });
+  const icmrUnknownVerdict = missingAddedProduct.framework_verdicts.find((item) => item.framework_id === 'india_icmr_hfss_v1');
+  assert(icmrUnknownVerdict, 'Expected ICMR framework verdict when added fields are missing');
+  assert.equal(icmrUnknownVerdict.severity, 'Unknown');
+  assert(icmrUnknownVerdict.unknown_reasons.includes('missing_added_nutrient'));
+
+  // 15. No framework data should produce Unknown global guardrail verdict.
+  const allUnknown = evaluateProduct({
+    id: 'all-unknown-frameworks',
+    barcode: '0000000000101',
+    name: 'Unknown Framework Product',
+    brand: 'Guardrail',
+    category: 'General',
+    region_availability: ['Global'],
+    ingredients_raw: [],
+    nutrition_per_100g: {}
+  });
+  assert.equal(allUnknown.global_guardrail_verdict, 'Unknown');
+
+  // 16. PHO/trans-fat marker should trigger a high-priority ingredient signal.
+  const phoSignalScan = evaluateProduct(null, {
+    ingredients: parseIngredientsInput('wheat flour, partially hydrogenated vegetable oil, sugar')
+  });
+  const phoSignal = phoSignalScan.risk_signals.find((signal) => signal.rule_triggered === 'trans_fat_pho');
+  assert(phoSignal, 'Expected trans_fat_pho signal for PHO marker');
+  assert.equal(phoSignal.severity, 'High');
+
+  // 17. Regulator-confirmed action should appear as a confirmed match and can raise strictest verdict.
+  const confirmedRegulatoryScan = evaluateProduct(
+    {
+      id: 'regulatory-confirmed-case',
+      barcode: '8909999999991',
+      name: 'Frozen shrimp consignments',
+      brand: 'Ocean Basket',
+      category: 'Seafood',
+      region_availability: ['US'],
+      product_form: 'solid',
+      ingredients_raw: ['shrimp', 'water'],
+      nutrition_per_100g: {}
+    },
+    {
+      regulatory_actions: [
+        {
+          id: 'ra-fda-import-1',
+          jurisdiction: 'US',
+          authority: 'U.S. FDA',
+          action_type: 'import_refusal',
+          product_name: 'Frozen shrimp consignments',
+          reason_category: 'Residue non-compliance',
+          hazard: 'Antibiotic residue markers',
+          action_date: '2026-02-10',
+          status: 'confirmed',
+          source_urls: ['https://www.accessdata.fda.gov/cms_ia/importalert_16.html'],
+          confidence: 'Regulator Confirmed'
+        }
+      ]
+    }
+  );
+  assert.equal(confirmedRegulatoryScan.regulatory_action_matches.length, 1);
+  assert.equal(confirmedRegulatoryScan.regulatory_action_matches[0].status, 'confirmed');
+  assert(confirmedRegulatoryScan.risk_signals.some((signal) => signal.rule_triggered.startsWith('regulatory_')));
+
+  // 18. Unverified brand-level ban claim must stay under review and not be published as confirmed ban.
+  const underReviewRegulatoryScan = evaluateProduct(
+    {
+      id: 'regulatory-under-review-case',
+      barcode: '8909999999992',
+      name: 'Mustard Oil',
+      brand: 'Generic Mustard',
+      category: 'Oils',
+      region_availability: ['Global'],
+      product_form: 'liquid',
+      ingredients_raw: ['mustard oil'],
+      nutrition_per_100g: {}
+    },
+    {
+      regulatory_actions: [
+        {
+          id: 'lead-claim-ban',
+          jurisdiction: 'Global',
+          authority: 'Secondary report',
+          action_type: 'ban',
+          product_name: 'Mustard Oil',
+          brand: 'Generic Mustard',
+          reason_category: 'Unverified claim',
+          hazard: 'Pending regulator verification',
+          action_date: '2026-02-11',
+          status: 'under_review',
+          source_urls: [],
+          confidence: 'Under Review'
+        }
+      ]
+    }
+  );
+  assert.equal(underReviewRegulatoryScan.regulatory_action_matches.length, 1);
+  assert.equal(underReviewRegulatoryScan.regulatory_action_matches[0].status, 'under_review');
+  assert.equal(underReviewRegulatoryScan.regulatory_action_matches[0].action_type, 'update');
+  assert.equal(
+    underReviewRegulatoryScan.risk_signals.some((signal) => signal.rule_triggered.startsWith('regulatory_')),
+    false
+  );
+  assert.equal(underReviewRegulatoryScan.overall_confidence, 'low');
+
   console.log('All risk engine tests passed.');
 }
 
