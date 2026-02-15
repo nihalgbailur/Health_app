@@ -1,4 +1,4 @@
-const CACHE_NAME = 'healthlens-v11';
+const CACHE_NAME = 'healthlens-v12';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -16,6 +16,16 @@ const CORE_ASSETS = [
   './catalog/avoid_markers.json',
   './catalog/source_allowlist.json',
   './manifest.webmanifest',
+  './assets/hero_bg.png',
+  './assets/scan_illustration.png',
+  './assets/logo.png',
+  './assets/icon_additives.png',
+  './assets/icon_nutrition.png',
+  './assets/icon_chemicals.png',
+  './assets/coach_avatar.png',
+  './assets/empty_scan.png',
+  './assets/empty_saved.png',
+  './assets/watchdog_symbol.png',
   './icon.svg',
   './icon-192.png',
   './icon-512.png'

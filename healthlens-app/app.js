@@ -95,7 +95,9 @@ const elements = {
   closeCameraScannerBtn: document.querySelector('#closeCameraScannerBtn'),
   useManualBarcodeBtn: document.querySelector('#useManualBarcodeBtn'),
   cameraVideo: document.querySelector('#cameraVideo'),
-  cameraStatus: document.querySelector('#cameraStatus')
+  cameraStatus: document.querySelector('#cameraStatus'),
+  scanIngredientsBtn: document.querySelector('#scanIngredientsBtn'),
+  cameraCaptureBtn: document.querySelector('#cameraCaptureBtn')
 };
 
 void init();
@@ -117,6 +119,7 @@ async function init() {
   bindCoach();
   bindSavedAndCompare();
   bindCameraScanner();
+  bindOCR();
   bindPwaInstall();
   registerServiceWorker();
 
@@ -373,6 +376,20 @@ function bindCameraScanner() {
       closeCameraScanner();
     }
   });
+
+  if (elements.cameraCaptureBtn) {
+    elements.cameraCaptureBtn.addEventListener('click', () => {
+      void captureAndOCR();
+    });
+  }
+}
+
+function bindOCR() {
+  if (elements.scanIngredientsBtn) {
+    elements.scanIngredientsBtn.addEventListener('click', () => {
+      void openCameraScanner('ingredients');
+    });
+  }
 }
 
 function registerServiceWorker() {
@@ -498,6 +515,7 @@ async function runCameraDetectionLoop() {
 
 async function openCameraScanner(targetInput = 'scan') {
   if (state.camera.isOpen) return;
+  state.camera.targetInput = targetInput;
 
   if (!window.isSecureContext && location.hostname !== 'localhost') {
     renderManualInputError('Camera scan requires HTTPS. Open this app on a secure URL and try again.');
@@ -509,10 +527,14 @@ async function openCameraScanner(targetInput = 'scan') {
     return;
   }
 
-  state.camera.targetInput = targetInput === 'home' ? 'home' : 'scan';
+  state.camera.targetInput = targetInput;
   state.camera.isOpen = true;
   state.camera.lastDetectedAt = 0;
   state.camera.lastValue = '';
+
+  const isOCR = targetInput === 'ingredients';
+  if (elements.cameraCaptureBtn) elements.cameraCaptureBtn.hidden = !isOCR;
+  if (elements.useManualBarcodeBtn) elements.useManualBarcodeBtn.hidden = isOCR;
 
   if (elements.cameraScannerModal) {
     elements.cameraScannerModal.hidden = false;
@@ -547,10 +569,16 @@ async function openCameraScanner(targetInput = 'scan') {
     }
 
     state.camera.detector = detector;
-    setCameraStatus('Point camera at barcode. Capture happens automatically.');
-    state.camera.rafId = requestAnimationFrame(() => {
-      void runCameraDetectionLoop();
-    });
+    state.camera.detector = detector;
+
+    if (isOCR) {
+      setCameraStatus('Point camera at INGREDIENTS list and tap Capture.');
+    } else {
+      setCameraStatus('Point camera at barcode. Capture happens automatically.');
+      state.camera.rafId = requestAnimationFrame(() => {
+        void runCameraDetectionLoop();
+      });
+    }
   } catch {
     closeCameraScanner();
     renderManualInputError('Camera permission was blocked or unavailable. Enable camera access and retry.');
@@ -782,23 +810,23 @@ function renderScanResult() {
 
   const swaps = product
     ? recommendSwaps(state.catalog, product, result, {
-        regulatory_actions: state.regulatoryActions,
-        avoid_markers: state.avoidMarkers
-      })
+      regulatory_actions: state.regulatoryActions,
+      avoid_markers: state.avoidMarkers
+    })
     : [];
   const swapHTML = swaps.length
     ? `<ul class="swap-list">${swaps
-        .map((swap) => {
-          const candidate = getProductById(swap.candidate_product_id);
-          if (!candidate) return '';
-          return `<li>
+      .map((swap) => {
+        const candidate = getProductById(swap.candidate_product_id);
+        if (!candidate) return '';
+        return `<li>
               <strong>${escapeHTML(candidate.name)}</strong>
               <p class="meta">${escapeHTML(candidate.brand)} • ${escapeHTML(candidate.category)}</p>
               <p>${escapeHTML(swap.reason_codes.join(' | '))}</p>
               <button type="button" class="secondary-btn" data-swap-product="${candidate.id}">View swap</button>
             </li>`;
-        })
-        .join('')}</ul>`
+      })
+      .join('')}</ul>`
     : '<p class="meta">No safer swap found yet in this category.</p>';
 
   const headerTitle = product
@@ -823,14 +851,12 @@ function renderScanResult() {
         <h3>${headerTitle}</h3>
         <p>${escapeHTML(result.summary)}</p>
         <p class="meta" style="margin-top:8px;">Ingredients: ${escapeHTML(ingredientsPreview.join(', ') || 'Not available')}</p>
-        ${
-          source
-            ? `<p class="meta" style="margin-top:6px;">Source: ${escapeHTML(getSourceLabel(source))}</p>`
-            : ''
-        }
-        ${
-          needsManualAssist
-            ? `<div class="stack-item" style="margin-top:10px;">
+        ${source
+      ? `<p class="meta" style="margin-top:6px;">Source: ${escapeHTML(getSourceLabel(source))}</p>`
+      : ''
+    }
+        ${needsManualAssist
+      ? `<div class="stack-item" style="margin-top:10px;">
                  <p><strong>Need a stronger result?</strong></p>
                  <p class="meta">This record has limited label data. Add ingredients from the product pack to unlock better risk detection.</p>
                  <div class="badge-row" style="margin-top:8px;">
@@ -839,8 +865,8 @@ function renderScanResult() {
                    <button type="button" class="ghost-btn" data-export-queue="1">Export queue</button>
                  </div>
                </div>`
-            : ''
-        }
+      : ''
+    }
       </div>
 
       ${product ? `<button type="button" class="secondary-btn" data-save-product="${product.id}">${state.savedIds.has(product.id) ? 'Remove from saved' : 'Save product'}</button>` : ''}
@@ -966,10 +992,9 @@ function renderConfidenceSummary(result) {
       <span class="badge ${levelClass}">${escapeHTML(level.toUpperCase())}</span>
       <span class="meta">${escapeHTML(label)}</span>
     </div>
-    ${
-      notes.length
-        ? `<ul class="meta-list">${notes.map((note) => `<li>${escapeHTML(note)}</li>`).join('')}</ul>`
-        : '<p class="meta">Confidence notes unavailable for this scan.</p>'
+    ${notes.length
+      ? `<ul class="meta-list">${notes.map((note) => `<li>${escapeHTML(note)}</li>`).join('')}</ul>`
+      : '<p class="meta">Confidence notes unavailable for this scan.</p>'
     }
   </div>`;
 }
@@ -1038,10 +1063,9 @@ function renderAvoidBanner(result) {
       <span class="meta">Name-only quick list</span>
     </div>
     <ul class="meta-list">${markerList}</ul>
-    ${
-      notes.length
-        ? `<p class="meta">${escapeHTML(notes[0])}</p>`
-        : ''
+    ${notes.length
+      ? `<p class="meta">${escapeHTML(notes[0])}</p>`
+      : ''
     }
   </div>`;
 }
@@ -1063,8 +1087,8 @@ function renderAvoidMarkerCard(marker) {
   const severityClass = marker.severity === 'High' ? 'high' : marker.severity === 'Moderate' ? 'moderate' : 'low';
   const links = marker.source_urls.length
     ? marker.source_urls
-        .map((url) => `<a href="${escapeAttr(url)}" target="_blank" rel="noreferrer">Source</a>`)
-        .join(' • ')
+      .map((url) => `<a href="${escapeAttr(url)}" target="_blank" rel="noreferrer">Source</a>`)
+      .join(' • ')
     : '<span class="meta">No source links</span>';
 
   return `<li class="stack-item avoid-marker">
@@ -1090,7 +1114,7 @@ function renderAvoidTab() {
     elements.avoidCategoryChips.innerHTML = categories
       .map((category) => {
         const active = category === selectedCategory;
-        return `<button type="button" class="${active ? 'secondary-btn' : 'ghost-btn'} avoid-chip" data-avoid-category="${escapeAttr(category)}">${escapeHTML(
+        return `<button type="button" class="${active ? 'secondary-btn' : 'ghost-btn'} avoid-chip" data-avoid-category="${escapeAttr(category)}" data-category="${escapeAttr(category)}">${escapeHTML(
           toCategoryLabel(category)
         )}</button>`;
       })
@@ -1188,7 +1212,11 @@ function renderCoachTip() {
 function renderSaved() {
   const savedProducts = state.catalog.filter((p) => state.savedIds.has(p.id));
   if (!savedProducts.length) {
-    elements.savedList.innerHTML = '<li class="stack-item"><p class="meta">No saved products yet. Save from Scan results.</p></li>';
+    elements.savedList.innerHTML = `
+      <li class="empty-state saved-empty">
+        <h3>No saved products</h3>
+        <p class="meta">Your saved collection is empty. Bookmark products from scan results to see them here.</p>
+      </li>`;
     return;
   }
 
@@ -1244,14 +1272,14 @@ function renderComparisonHTML(leftProduct, rightProduct, comparison) {
       <p class="meta">Based on current risk score and nutrition red-flag count.</p>
       <div class="compare-grid">
         ${comparison.nutrientDiff
-          .map(
-            (diff) => `<div class="compare-row">
+      .map(
+        (diff) => `<div class="compare-row">
               <span>${escapeHTML(diff.nutrient)}</span>
               <span>${escapeHTML(leftProduct.name)}: ${diff.left_value}</span>
               <span>${escapeHTML(rightProduct.name)}: ${diff.right_value}</span>
             </div>`
-          )
-          .join('')}
+      )
+      .join('')}
       </div>
     </div>
   `;
@@ -1340,11 +1368,55 @@ function writeCoachIndex(index) {
 
 function escapeHTML(value) {
   return String(value || '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+async function captureAndOCR() {
+  if (!state.camera.stream || !elements.cameraVideo) return;
+
+  setCameraStatus('Processing image... this may take a few seconds.');
+
+  // Capture frame
+  const canvas = document.createElement('canvas');
+  canvas.width = elements.cameraVideo.videoWidth;
+  canvas.height = elements.cameraVideo.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(elements.cameraVideo, 0, 0, canvas.width, canvas.height);
+
+  // Stop stream to freeze UI
+  stopCameraStream();
+
+  try {
+    if (!window.Tesseract) {
+      throw new Error('OCR library not loaded.');
+    }
+
+    const { data: { text } } = await window.Tesseract.recognize(canvas, 'eng');
+
+    // Simple cleanup
+    const cleanText = text
+      .replace(/\n/g, ', ')
+      .replace(/[^a-zA-Z0-9, \-\.%]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (cleanText.length < 5) {
+      setCameraStatus('No text detected. Try again.', true);
+      return;
+    }
+
+    closeCameraScanner();
+    elements.manualIngredients.value = cleanText;
+    focusManualIngredients();
+
+  } catch (err) {
+    console.error(err);
+    setCameraStatus('OCR failed. Try manual entry.', true);
+  }
 }
 
 function escapeAttr(value) {
